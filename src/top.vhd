@@ -21,9 +21,20 @@ end top;
 
 architecture Behavioral of top is
     
+    component FrequencyDivider is
+        generic (
+            DIVIDER_VALUE : integer := 2
+        );
+        Port (
+            clk_in  : in  STD_LOGIC;
+            clk_out : out STD_LOGIC;
+            clk : IN std_logic
+        );
+    end component;
     component contador is
       Port (
-        code : out std_logic_vector(2 downto 0)
+        code : out std_logic_vector(2 downto 0);
+        clk : in std_logic
       );
     end component;
     component decoder IS
@@ -57,22 +68,42 @@ architecture Behavioral of top is
             code_in : IN std_logic_vector(3 DOWNTO 0);
             code_out : OUT std_logic_vector(3 DOWNTO 0);
             counter_in: IN std_logic_vector(2 DOWNTO 0);
-            blink_in: IN std_logic_vector(3 DOWNTO 0)
+            blink_in: IN std_logic_vector(3 DOWNTO 0);
+            clk : IN std_logic
         );
     END component;
 
-
+    signal counter_clk : std_logic;
+    signal blink_clk : std_logic;
     signal contador_out : std_logic_vector(2 downto 0);
     signal code_display : std_logic_vector(3 downto 0);
     signal code_display_blink : std_logic_vector(3 downto 0);
     
 begin
+    
+    
+    -- Clocks mult
+    div_freq_contador : FrequencyDivider generic map(
+            DIVIDER_VALUE => 100000
+    )
+    port map(
+        clk_in => CLK100MHZ,
+        clk_out => counter_clk
+    );
 
+
+    -- Clock blink
+    div_freq_blink : FrequencyDivider generic map(
+            DIVIDER_VALUE => 100000000
+    )
+    port map(
+        clk_in => CLK100MHZ,
+        clk_out => blink_clk
+    );
     
 
-
     -- contador
-    contador_multiplexacion : contador port map (code => contador_out);
+    contador_multiplexacion : contador port map (code => contador_out, clk => counter_clk);
 
 
     -- multiplexor:
@@ -88,14 +119,15 @@ begin
     select_c => contador_out,
     out_c => code_display
     );
-    
+
 
     -- Blink
     blink_controler1 : blink_controler PORT map(
     code_in => code_display,
     code_out => code_display_blink,
     counter_in => contador_out,
-    blink_in => SW(3 downto 0)
+    blink_in => SW(3 downto 0),
+    clk => blink_clk
     );
 
 

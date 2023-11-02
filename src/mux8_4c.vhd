@@ -32,7 +32,7 @@ BEGIN
     in4 WHEN "100",
     in5 WHEN "101",
     in6 WHEN "110",
-    in7 WHEN "111";
+    in7 WHEN others;
 END dataflow;
 
 
