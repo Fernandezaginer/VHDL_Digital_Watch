@@ -52,9 +52,19 @@ architecture Behavioral of top is
             DIGISEL : in std_logic_vector(2 downto 0)
         );
     end component;
+    component blink_controler IS
+        PORT (
+            code_in : IN std_logic_vector(3 DOWNTO 0);
+            code_out : OUT std_logic_vector(3 DOWNTO 0);
+            counter_in: IN std_logic_vector(2 DOWNTO 0);
+            blink_in: IN std_logic_vector(3 DOWNTO 0)
+        );
+    END component;
+
 
     signal contador_out : std_logic_vector(2 downto 0);
     signal code_display : std_logic_vector(3 downto 0);
+    signal code_display_blink : std_logic_vector(3 downto 0);
     
 begin
 
@@ -77,6 +87,15 @@ begin
     in7 => SW(3 downto 0),
     select_c => contador_out,
     out_c => code_display
+    );
+    
+
+    -- Blink
+    blink_controler1 : blink_controler PORT map(
+    code_in => code_display,
+    code_out => code_display_blink,
+    counter_in => contador_out,
+    blink_in => SW(3 downto 0)
     );
 
 
