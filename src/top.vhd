@@ -27,8 +27,7 @@ architecture Behavioral of top is
         );
         Port (
             clk_in  : in  STD_LOGIC;
-            clk_out : out STD_LOGIC;
-            clk : IN std_logic
+            clk_out : out STD_LOGIC
         );
     end component;
     component contador is
