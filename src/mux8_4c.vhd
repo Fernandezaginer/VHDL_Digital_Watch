@@ -3,6 +3,8 @@ LIBRARY ieee;
 USE ieee.std_logic_1164.ALL;
 USE ieee.std_logic_arith.ALL;
 USE ieee.std_logic_unsigned.ALL;
+library UNISIM;
+use UNISIM.VComponents.all;
 
 ENTITY mux8_4c IS
     PORT (
@@ -30,8 +32,8 @@ BEGIN
     in4 WHEN "100",
     in5 WHEN "101",
     in6 WHEN "110",
-    in7 WHEN "111"
-END ARCHITECTURE dataflow;
+    in7 WHEN "111";
+END dataflow;
 
 
 
