@@ -1,9 +1,12 @@
+-- Trabajo SED 23/24 Grupo 2
+-- Modulo display
+-- Entidad preescaladora del reloj
 
 
 library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
 
-entity FrequencyDivider is
+entity Prescaler is
 	generic (
 	    DIVIDER_VALUE : integer := 2
 	);
@@ -11,9 +14,9 @@ entity FrequencyDivider is
         clk_in  : in  STD_LOGIC;
         clk_out : out STD_LOGIC
     );
-end FrequencyDivider;
+end Prescaler;
 
-architecture Behavioral of FrequencyDivider is
+architecture Behavioral of Prescaler is
     signal counter : integer range 0 to 1 := 0;
     signal clk_out_internal : STD_LOGIC := '0';
 begin

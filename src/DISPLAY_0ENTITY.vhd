@@ -1,9 +1,15 @@
+-- Trabajo SED 23/24 Grupo 2
+-- Modulo display
+-- Entidad central del display
+
+
+
 library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
 library UNISIM;
 use UNISIM.VComponents.all;
 
-entity top is
+entity display is
     Port (
         digits_0to3 : in std_logic_vector(15 downto 0);
         digits_4to7 : in std_logic_vector(15 downto 0);
@@ -13,15 +19,14 @@ entity top is
         SEGMENT : out STD_LOGIC_VECTOR (6 downto 0);
         digctrl : out STD_LOGIC_VECTOR (7 downto 0)
     );
-end top;
+end display;
 
 
 
 
-
-architecture Behavioral of top is
+architecture Behavioral of display is
     
-    component FrequencyDivider is
+    component Prescaler is
         generic (
             DIVIDER_VALUE : integer := 2
         );
@@ -36,12 +41,12 @@ architecture Behavioral of top is
         clk : in std_logic
       );
     end component;
-    component decoder IS
+    component catodo_decoder IS
         PORT (
         code : IN std_logic_vector(3 DOWNTO 0);
         led : OUT std_logic_vector(6 DOWNTO 0)
         );
-    END component decoder;
+    END component catodo_decoder;
     component mux8_4c IS
         PORT (
             in0 : IN std_logic_vector(3 DOWNTO 0);
@@ -82,7 +87,7 @@ begin
     
     
     -- Clocks mult
-    div_freq_contador : FrequencyDivider generic map(
+    div_freq_contador : Prescaler generic map(
             DIVIDER_VALUE => 100000
     )
     port map(
@@ -92,7 +97,7 @@ begin
 
 
     -- Clock blink
-    div_freq_blink : FrequencyDivider generic map(
+    div_freq_blink : Prescaler generic map(
             DIVIDER_VALUE => 100000000
     )
     port map(
@@ -135,7 +140,7 @@ begin
 
 
     -- Catodos del display:
-    disp_decoder: decoder port map (LED => SEGMENT, CODE => code_display);
+    disp_decoder: catodo_decoder port map (LED => SEGMENT, CODE => code_display);
 
 
 end Behavioral;

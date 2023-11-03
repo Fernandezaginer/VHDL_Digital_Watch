@@ -1,3 +1,7 @@
+-- Trabajo SED 23/24 Grupo 2
+-- Modulo display
+-- Entidad de control del parpadeo de los dígitos
+
 
 
 LIBRARY ieee;
