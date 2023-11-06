@@ -21,17 +21,17 @@ END ENTITY catodo_decoder;
 ARCHITECTURE dataflow OF catodo_decoder IS
 BEGIN
     WITH code SELECT
-    led <= "0000001" WHEN "0000",
+    led <= "1000000" WHEN "0000",
     "1001111" WHEN "0001",
     "0010010" WHEN "0010",
     "0000110" WHEN "0011",
-    "1001100" WHEN "0100",
+    "0001101" WHEN "0100",
     "0100100" WHEN "0101",
     "0100000" WHEN "0110",
-    "0001111" WHEN "0111",
+    "1001110" WHEN "0111",
     "0000000" WHEN "1000",
     "0000100" WHEN "1001",
     "0011100" WHEN "1010",  --º
-    "0110001" WHEN "1011",  --C
+    "1110000" WHEN "1011",  --C
     "1111111" WHEN others;
 END ARCHITECTURE dataflow;

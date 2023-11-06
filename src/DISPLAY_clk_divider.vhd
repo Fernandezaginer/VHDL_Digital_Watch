@@ -7,9 +7,9 @@ library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
 
 entity Prescaler is
-	generic (
-	    DIVIDER_VALUE : integer := 2
-	);
+    generic (
+        DIVIDER_VALUE : integer := 16
+    );
     Port (
         clk_in  : in  STD_LOGIC;
         clk_out : out STD_LOGIC
@@ -17,17 +17,17 @@ entity Prescaler is
 end Prescaler;
 
 architecture Behavioral of Prescaler is
-    signal counter : integer range 0 to 1 := 0;
+    signal counter : integer := 1;
     signal clk_out_internal : STD_LOGIC := '0';
 begin
     process(clk_in)
     begin
         if rising_edge(clk_in) then
-            if counter = DIVIDER_VALUE - 1 then
-                counter <= 0;
+            if counter >= DIVIDER_VALUE - 1 then
+                counter <= 1;
                 clk_out_internal <= not clk_out_internal;
             else
-                counter <= counter + 1;
+                counter <= counter + 2;
             end if;
         end if;
     end process;
