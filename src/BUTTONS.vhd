@@ -6,7 +6,7 @@
 
 entity button_interface is
 	Port(
-        CLK100MHZ  : in std_logic;
+        CLK  : in std_logic;
 		UP_SW : in std_logic;
 		LEFT_SW : in std_logic;
 		RIGHT_SW : in std_logic;
@@ -45,20 +45,20 @@ architecture Structual of button_interface is
 	signal s_ok : std_logic;
 begin
 
-	SYNCHRNZR_up : SYNCHRNZR port map (CLK => CLK100MHZ, ASYNC_IN => UP_SW, SYNC_OUT => s_up);
-	EDGEDTCTR_up : EDGEDTCTR port map (CLK => CLK100MHZ, SYNC_IN => s_up, EDGE => UP);
+	SYNCHRNZR_up : SYNCHRNZR port map (CLK => CLK, ASYNC_IN => UP_SW, SYNC_OUT => s_up);
+	EDGEDTCTR_up : EDGEDTCTR port map (CLK => CLK, SYNC_IN => s_up, EDGE => UP);
 
-	SYNCHRNZR_down : SYNCHRNZR port map (CLK => CLK100MHZ, ASYNC_IN => DOWN_SW, SYNC_OUT => s_down);
-	EDGEDTCTR_down : EDGEDTCTR port map (CLK => CLK100MHZ, SYNC_IN => s_down, EDGE => DOWN);
+	SYNCHRNZR_down : SYNCHRNZR port map (CLK => CLK, ASYNC_IN => DOWN_SW, SYNC_OUT => s_down);
+	EDGEDTCTR_down : EDGEDTCTR port map (CLK => CLK, SYNC_IN => s_down, EDGE => DOWN);
 
-	SYNCHRNZR_left : SYNCHRNZR port map (CLK => CLK100MHZ, ASYNC_IN => LEFT_SW, SYNC_OUT => s_left);
-	EDGEDTCTR_left : EDGEDTCTR port map (CLK => CLK100MHZ, SYNC_IN => s_left, EDGE => LEFT);
+	SYNCHRNZR_left : SYNCHRNZR port map (CLK => CLK, ASYNC_IN => LEFT_SW, SYNC_OUT => s_left);
+	EDGEDTCTR_left : EDGEDTCTR port map (CLK => CLK, SYNC_IN => s_left, EDGE => LEFT);
 
-	SYNCHRNZR_right : SYNCHRNZR port map (CLK => CLK100MHZ, ASYNC_IN => RIGHT_SW, SYNC_OUT => s_right);
-	EDGEDTCTR_right : EDGEDTCTR port map (CLK => CLK100MHZ, SYNC_IN => s_right, EDGE => RIGHT);
+	SYNCHRNZR_right : SYNCHRNZR port map (CLK => CLK, ASYNC_IN => RIGHT_SW, SYNC_OUT => s_right);
+	EDGEDTCTR_right : EDGEDTCTR port map (CLK => CLK, SYNC_IN => s_right, EDGE => RIGHT);
 
-	SYNCHRNZR_ok : SYNCHRNZR port map (CLK => CLK100MHZ, ASYNC_IN => OK_SW, SYNC_OUT => s_ok);
-	EDGEDTCTR_ok : EDGEDTCTR port map (CLK => CLK100MHZ, SYNC_IN => s_ok, EDGE => OK);
+	SYNCHRNZR_ok : SYNCHRNZR port map (CLK => CLK, ASYNC_IN => OK_SW, SYNC_OUT => s_ok);
+	EDGEDTCTR_ok : EDGEDTCTR port map (CLK => CLK, SYNC_IN => s_ok, EDGE => OK);
 
 end Structual
 

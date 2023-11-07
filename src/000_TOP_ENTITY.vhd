@@ -2,32 +2,284 @@
 -- Entidad principal del despertador
 
 
-
 entity TOP is
     Port (
-        digits_0to3 : in std_logic_vector(15 downto 0);
-        digits_4to7 : in std_logic_vector(15 downto 0);
         SW : in std_logic_vector(15 downto 0);
-        blink_pairs : in std_logic_vector(3 downto 0);
         CLK100MHZ  : in std_logic;
         SEGMENT : out STD_LOGIC_VECTOR (6 downto 0);
-        digctrl : out STD_LOGIC_VECTOR (7 downto 0)
+        digctrl : out STD_LOGIC_VECTOR (7 downto 0);
+		BTNU : in std_logic;
+		BTNC : in std_logic;
+		BTNL : in std_logic;
+		BTNR : in std_logic;
+		BTND : in std_logic
     );
 end TOP;
 
 architecture Structual of TOP is
+
+
+	----------------------------------------------------------------------------
+	--                           I/O
+	----------------------------------------------------------------------------
+
 	component display is
 	    Port (
 	        digits_0to3 : in std_logic_vector(15 downto 0);
 	        digits_4to7 : in std_logic_vector(15 downto 0);
-	        SW : in std_logic_vector(15 downto 0);
 	        blink_pairs : in std_logic_vector(3 downto 0);
 	        CLK100MHZ  : in std_logic;
-	        SEGMENT : out STD_LOGIC_VECTOR (6 downto 0);
-	        digctrl : out STD_LOGIC_VECTOR (7 downto 0)
+	        SEGMENT_CRTL : out STD_LOGIC_VECTOR (6 downto 0);
+	        digctrl_CTRL : out STD_LOGIC_VECTOR (7 downto 0)
 	    );
 	end component;
+
+	component button_interface is
+		Port(
+	        CLK : in std_logic;
+			UP_SW : in std_logic;
+			LEFT_SW : in std_logic;
+			RIGHT_SW : in std_logic;
+			DOWN_SW : in std_logic;
+			OK_SW : in std_logic;
+			UP : in std_logic;
+			LEFT : in std_logic;
+			RIGHT : in std_logic;
+			DOWN : in std_logic;
+			OK : in std_logic
+		);
+	end component;
+
+
+
+
+	----------------------------------------------------------------------------
+	--                           INTERNAL
+	----------------------------------------------------------------------------
+
+	component mux16_nc IS
+	    generic (
+	        CHANEL_LENGTH : integer := 16
+	    );
+	    PORT (
+	        in0 : IN std_logic_vector(CHANEL_LENGTH - 1 DOWNTO 0);
+	        in1 : IN std_logic_vector(CHANEL_LENGTH - 1 DOWNTO 0);
+	        in2 : IN std_logic_vector(CHANEL_LENGTH - 1 DOWNTO 0);
+	        in3 : IN std_logic_vector(CHANEL_LENGTH - 1 DOWNTO 0);
+	        in4 : IN std_logic_vector(CHANEL_LENGTH - 1 DOWNTO 0);
+	        in5 : IN std_logic_vector(CHANEL_LENGTH - 1 DOWNTO 0);
+	        in6 : IN std_logic_vector(CHANEL_LENGTH - 1 DOWNTO 0);
+	        in7 : IN std_logic_vector(CHANEL_LENGTH - 1 DOWNTO 0);
+	        in8 : IN std_logic_vector(CHANEL_LENGTH - 1 DOWNTO 0);
+	        in9 : IN std_logic_vector(CHANEL_LENGTH - 1 DOWNTO 0);
+	        in10 : IN std_logic_vector(CHANEL_LENGTH - 1 DOWNTO 0);
+	        in11 : IN std_logic_vector(CHANEL_LENGTH - 1 DOWNTO 0);
+	        in12 : IN std_logic_vector(CHANEL_LENGTH - 1 DOWNTO 0);
+	        in13 : IN std_logic_vector(CHANEL_LENGTH - 1 DOWNTO 0);
+	        in14 : IN std_logic_vector(CHANEL_LENGTH - 1 DOWNTO 0);
+	        in15 : IN std_logic_vector(CHANEL_LENGTH - 1 DOWNTO 0);
+	        select_c : IN std_logic_vector(3 DOWNTO 0);
+	        out_c : OUT std_logic_vector(CHANEL_LENGTH - 1 DOWNTO 0)
+	    );
+	END component;
+
+
+	component control_counter is
+		generic(
+			max_count : integer := 8
+		);
+		Port (
+	        clk : in std_logic;
+	        counter_in : in std_logic;
+	        counter_out : in std_logic_vector(3 downto 0)
+	    );
+	end component;
+
+
+
+	----------------------------------------------------------------------------
+	--                      FUNCIONALIDADES
+	----------------------------------------------------------------------------
+
+
+
+
+
+
+
+
+
+	----------------------------------------------------------------------------
+	--                     SEÑALES GENERALES
+	----------------------------------------------------------------------------
+
+	signal mode : integer :=0;
+	signal UP : std_logic := 0;
+	signal LEFT : std_logic := 0;
+	signal RIGHT : std_logic := 0;
+	signal DOWN : std_logic := 0;
+	signal OK : std_logic := 0;
+
+    signal digits_0to3 : std_logic_vector(15 downto 0);
+    signal digits_4to7 : std_logic_vector(15 downto 0);
+
+    signal digits_0to3_0 : std_logic_vector(15 downto 0) := "0000000000000000";
+    signal digits_4to7_0 : std_logic_vector(15 downto 0) := "0000000000000000";
+    signal digits_0to3_1 : std_logic_vector(15 downto 0) := "0000000000000000";
+    signal digits_4to7_1 : std_logic_vector(15 downto 0) := "0000000000000000";
+    signal digits_0to3_2 : std_logic_vector(15 downto 0) := "0000000000000000";
+    signal digits_4to7_2 : std_logic_vector(15 downto 0) := "0000000000000000";
+    signal digits_0to3_3 : std_logic_vector(15 downto 0) := "0000000000000000";
+    signal digits_4to7_3 : std_logic_vector(15 downto 0) := "0000000000000000";
+    signal digits_0to3_4 : std_logic_vector(15 downto 0) := "0000000000000000";
+    signal digits_4to7_4 : std_logic_vector(15 downto 0) := "0000000000000000";
+    signal digits_0to3_5 : std_logic_vector(15 downto 0) := "0000000000000000";
+    signal digits_4to7_5 : std_logic_vector(15 downto 0) := "0000000000000000";
+    signal digits_0to3_6 : std_logic_vector(15 downto 0) := "0000000000000000";
+    signal digits_4to7_6 : std_logic_vector(15 downto 0) := "0000000000000000";
+    signal digits_0to3_7 : std_logic_vector(15 downto 0) := "0000000000000000";
+    signal digits_4to7_7 : std_logic_vector(15 downto 0) := "0000000000000000";
+
+    signal digits_0to3_8 : std_logic_vector(15 downto 0) := "0000000000000000";
+    signal digits_4to7_8 : std_logic_vector(15 downto 0) := "0000000000000000";
+    signal digits_0to3_9 : std_logic_vector(15 downto 0) := "0000000000000000";
+    signal digits_4to7_9 : std_logic_vector(15 downto 0) := "0000000000000000";
+    signal digits_0to3_10 : std_logic_vector(15 downto 0) := "0000000000000000";
+    signal digits_4to7_10 : std_logic_vector(15 downto 0) := "0000000000000000";
+    signal digits_0to3_11 : std_logic_vector(15 downto 0) := "0000000000000000";
+    signal digits_4to7_11 : std_logic_vector(15 downto 0) := "0000000000000000";
+    signal digits_0to3_12 : std_logic_vector(15 downto 0) := "0000000000000000";
+    signal digits_4to7_12 : std_logic_vector(15 downto 0) := "0000000000000000";
+    signal digits_0to3_13 : std_logic_vector(15 downto 0) := "0000000000000000";
+    signal digits_4to7_13 : std_logic_vector(15 downto 0) := "0000000000000000";
+    signal digits_0to3_14 : std_logic_vector(15 downto 0) := "0000000000000000";
+    signal digits_4to7_14 : std_logic_vector(15 downto 0) := "0000000000000000";
+    signal digits_0to3_15 : std_logic_vector(15 downto 0) := "0000000000000000";
+    signal digits_4to7_15 : std_logic_vector(15 downto 0) := "0000000000000000";
+
+
+
 begin
+	
+	----------------------------------------------------------------------------
+	--                  COMPONENTES GENERALES
+	----------------------------------------------------------------------------
+
+	displays_7seg: display
+	    Port map (
+	        digits_0to3 => digits_0to3,
+	        digits_4to7 => digits_4to7,
+	        blink_pairs => ,
+	        CLK => CLK100MHZ,
+	        SEGMENT_CRTL => SEGMENT,
+	        digctrl_CTRL => digctrl
+	    );
+
+	buttons: button_interface
+		Port map(
+	        CLK => CLK100MHZ,
+			UP_SW => BTNU,
+			LEFT_SW => BTNL,
+			RIGHT_SW => BTNR,
+			DOWN_SW => BTND,
+			OK_SW => BTNC,
+			UP => UP,
+			LEFT => LEFT,
+			RIGHT => RIGHT,
+			DOWN => DOWN,
+			OK => OK
+		);
+
+	contador : control_counter
+		generic map(
+			max_count : integer := 7
+		);
+		Port map (
+	        clk => CLK100MHZ,
+	        counter_in => ,
+	        counter_out => mode
+	    );
+
+
+	mux16_0 : mux16_nc
+	    generic map (
+	        CHANEL_LENGTH : integer := 16
+	    );
+	    PORT map(
+	        in0 => digits_0to3_0,
+	        in1 => digits_0to3_1,
+	        in2 => digits_0to3_2,
+	        in3 => digits_0to3_3,
+	        in4 => digits_0to3_4,
+	        in5 => digits_0to3_5,
+	        in6 => digits_0to3_6,
+	        in7 => digits_0to3_7,
+	        in8 => digits_0to3_8,
+	        in9 => digits_0to3_9,
+	        in10 => digits_0to3_10,
+	        in11 => digits_0to3_11,
+	        in12 => digits_0to3_12,
+	        in13 => digits_0to3_13,
+	        in14 => digits_0to3_14,
+	        in15 => digits_0to3_15,
+	        select_c => mode,
+	        out_c => digits_0to3
+	    );
+
+	mux16_1 : mux16_nc
+	    generic map (
+	        CHANEL_LENGTH : integer := 16
+	    );
+	    PORT map(
+	        in0 => digits_4to7_0,
+	        in1 => digits_4to7_1,
+	        in2 => digits_4to7_2,
+	        in3 => digits_4to7_3,
+	        in4 => digits_4to7_4,
+	        in5 => digits_4to7_5,
+	        in6 => digits_4to7_6,
+	        in7 => digits_4to7_7,
+	        in8 => digits_4to7_8,
+	        in9 => digits_4to7_9,
+	        in10 => digits_4to7_10,
+	        in11 => digits_4to7_11,
+	        in12 => digits_4to7_12,
+	        in13 => digits_4to7_13,
+	        in14 => digits_4to7_14,
+	        in15 => digits_4to7_15,
+	        select_c => mode,
+	        out_c => digits_4to7
+	    );
+
+
+
+
+	----------------------------------------------------------------------------
+	--                    ESTADOS DEL SISTEMA
+	----------------------------------------------------------------------------
+	
+	-- 0. Contador de hora
+
+
+	-- 1. Contador de fecha
+
+
+	-- 2. Contador de año
+
+
+	-- 3. Alarma
+
+
+	-- 4. Dias de la semana de la alarma
+
+
+	-- 5. Cronometro
+
+
+	-- 6. Cuenta atrás
+
+
+	-- 7. Configuración 12/24h
 
 
 
