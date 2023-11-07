@@ -23,7 +23,6 @@ end contador;
 architecture Behavioral of contador is
     signal var_contador : integer := 0;
 begin
-    
     process(clk)
     begin
         if rising_edge(clk) then
@@ -33,4 +32,5 @@ begin
             var_contador <= var_contador + 1;
         end if;
     end process;
+    code <= std_logic_vector(to_signed(var_contador,3));
 end Behavioral;

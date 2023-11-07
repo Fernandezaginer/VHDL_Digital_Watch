@@ -88,7 +88,7 @@ begin
     
     -- Clocks mult
     div_freq_contador : Prescaler generic map(
-            DIVIDER_VALUE => 100000
+            DIVIDER_VALUE => 10000
     )
     port map(
         clk_in => CLK100MHZ,
@@ -140,7 +140,7 @@ begin
 
 
     -- Catodos del display:
-    disp_decoder: catodo_decoder port map (LED => SEGMENT, CODE => code_display);
+    disp_decoder: catodo_decoder port map (LED => SEGMENT, CODE => code_display_blink);
 
 
 end Behavioral;
