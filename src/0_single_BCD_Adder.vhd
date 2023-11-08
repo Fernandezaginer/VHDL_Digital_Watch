@@ -1,5 +1,14 @@
 
 
+
+LIBRARY ieee;
+USE ieee.std_logic_1164.ALL;
+USE ieee.std_logic_arith.ALL;
+USE ieee.std_logic_unsigned.ALL;
+library UNISIM;
+use UNISIM.VComponents.all;
+
+
 entity bcd_adder is
 	port(
 		clk : in std_logic;

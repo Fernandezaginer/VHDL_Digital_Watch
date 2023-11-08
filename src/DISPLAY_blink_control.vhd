@@ -33,7 +33,7 @@ BEGIN
             elsif ((counter_in = "001") and (blink_in(6) = '1')) then
                 code_out <= "1111";
             elsif ((counter_in = "010") and (blink_in(5) = '1')) then
-                code_out <= "1111"
+                code_out <= "1111";
             elsif ((counter_in = "011") and (blink_in(4) = '1')) then
                 code_out <= "1111";
             elsif ((counter_in = "100") and (blink_in(3) = '1')) then

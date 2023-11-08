@@ -1,3 +1,16 @@
+-- Trabajo SED 23/24 Grupo 2
+-- Varios modulos 
+-- Sumador BCD
+
+
+
+LIBRARY ieee;
+USE ieee.std_logic_1164.ALL;
+USE ieee.std_logic_arith.ALL;
+USE ieee.std_logic_unsigned.ALL;
+library UNISIM;
+use UNISIM.VComponents.all;
+
 
 entity bcd_adder is
 	port(

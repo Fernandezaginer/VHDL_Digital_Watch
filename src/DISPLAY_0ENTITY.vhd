@@ -2,10 +2,10 @@
 -- Modulo display
 -- Entidad central del display
 
-
-
-library IEEE;
-use IEEE.STD_LOGIC_1164.ALL;
+LIBRARY ieee;
+USE ieee.std_logic_1164.ALL;
+USE ieee.std_logic_arith.ALL;
+USE ieee.std_logic_unsigned.ALL;
 library UNISIM;
 use UNISIM.VComponents.all;
 

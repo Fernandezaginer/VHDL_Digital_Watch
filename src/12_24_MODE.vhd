@@ -7,6 +7,13 @@
 -- 1 == 24h
 -- 0 == 12h
 
+LIBRARY ieee;
+USE ieee.std_logic_1164.ALL;
+USE ieee.std_logic_arith.ALL;
+USE ieee.std_logic_unsigned.ALL;
+library UNISIM;
+use UNISIM.VComponents.all;
+
 
 entity display_12_24 is
     Port (
