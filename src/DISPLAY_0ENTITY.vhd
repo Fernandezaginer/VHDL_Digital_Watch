@@ -13,7 +13,7 @@ entity display is
     Port (
         digits_0to3 : in std_logic_vector(15 downto 0);
         digits_4to7 : in std_logic_vector(15 downto 0);
-        blink_pairs : in std_logic_vector(3 downto 0);
+        blink_ctrl : in std_logic_vector(7 downto 0);
         CLK  : in std_logic;
         SEGMENT_CRTL : out STD_LOGIC_VECTOR (6 downto 0);
         digctrl_CTRL : out STD_LOGIC_VECTOR (7 downto 0)
@@ -71,7 +71,7 @@ architecture Behavioral of display is
             code_in : IN std_logic_vector(3 DOWNTO 0);
             code_out : OUT std_logic_vector(3 DOWNTO 0);
             counter_in: IN std_logic_vector(2 DOWNTO 0);
-            blink_in: IN std_logic_vector(3 DOWNTO 0);
+            blink_in: IN std_logic_vector(7 DOWNTO 0);
             clk : IN std_logic
         );
     END component;
@@ -129,7 +129,7 @@ begin
     code_in => code_display,
     code_out => code_display_blink,
     counter_in => contador_out,
-    blink_in => blink_pairs,
+    blink_in => blink_ctrl,
     clk => blink_clk
     );
 

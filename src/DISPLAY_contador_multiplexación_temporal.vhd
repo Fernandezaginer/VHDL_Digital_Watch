@@ -3,6 +3,7 @@
 -- Entidad contador, para realizar la multiplexación por tiempo de todos los digitos del display
 
 
+
 library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
 USE ieee.std_logic_arith.ALL;

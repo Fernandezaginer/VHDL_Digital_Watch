@@ -2,6 +2,10 @@
 -- Entidad principal del despertador
 
 
+
+--------------------------------------------------------------------------------
+
+
 entity TOP is
     Port (
         SW : in std_logic_vector(15 downto 0);
@@ -27,7 +31,7 @@ architecture Structual of TOP is
 	    Port (
 	        digits_0to3 : in std_logic_vector(15 downto 0);
 	        digits_4to7 : in std_logic_vector(15 downto 0);
-	        blink_pairs : in std_logic_vector(3 downto 0);
+	        blink_ctrl : in std_logic_vector(7 downto 0);
 	        CLK100MHZ  : in std_logic;
 	        SEGMENT_CRTL : out STD_LOGIC_VECTOR (6 downto 0);
 	        digctrl_CTRL : out STD_LOGIC_VECTOR (7 downto 0)
@@ -96,6 +100,18 @@ architecture Structual of TOP is
 	end component;
 
 
+	component display_12_24 is
+	    Port (
+	        mode: in std_logic_vector(3 downto 0);
+	        buttons: in std_logic_vector(3 downto 0);
+	        digits_0to3 : out std_logic_vector(15 downto 0);
+	        digits_4to7 : out std_logic_vector(15 downto 0);
+	        blink_ctrl : out std_logic_vector(7 downto 0);
+	        out_mode : out std_logic
+	    );
+	end component;
+
+
 
 	----------------------------------------------------------------------------
 	--                      FUNCIONALIDADES
@@ -120,8 +136,13 @@ architecture Structual of TOP is
 	signal DOWN : std_logic := 0;
 	signal OK : std_logic := 0;
 
+	signal buttons : std_logic_vector(3 downto 0);
+
+	signal out_mode_12_24 : std_logic := 0;
+
     signal digits_0to3 : std_logic_vector(15 downto 0);
     signal digits_4to7 : std_logic_vector(15 downto 0);
+    signal blink_ctrl : std_logic_vector(7 downto 0);
 
     signal digits_0to3_0 : std_logic_vector(15 downto 0) := "0000000000000000";
     signal digits_4to7_0 : std_logic_vector(15 downto 0) := "0000000000000000";
@@ -140,6 +161,7 @@ architecture Structual of TOP is
     signal digits_0to3_7 : std_logic_vector(15 downto 0) := "0000000000000000";
     signal digits_4to7_7 : std_logic_vector(15 downto 0) := "0000000000000000";
 
+
     signal digits_0to3_8 : std_logic_vector(15 downto 0) := "0000000000000000";
     signal digits_4to7_8 : std_logic_vector(15 downto 0) := "0000000000000000";
     signal digits_0to3_9 : std_logic_vector(15 downto 0) := "0000000000000000";
@@ -157,10 +179,25 @@ architecture Structual of TOP is
     signal digits_0to3_15 : std_logic_vector(15 downto 0) := "0000000000000000";
     signal digits_4to7_15 : std_logic_vector(15 downto 0) := "0000000000000000";
 
+    signal blink_ctrl_0 : std_logic_vector(7 downto 0) := "00000000";
+    signal blink_ctrl_1 : std_logic_vector(7 downto 0) := "00000000";
+    signal blink_ctrl_2 : std_logic_vector(7 downto 0) := "00000000";
+    signal blink_ctrl_3 : std_logic_vector(7 downto 0) := "00000000";
+    signal blink_ctrl_4 : std_logic_vector(7 downto 0) := "00000000";
+    signal blink_ctrl_5 : std_logic_vector(7 downto 0) := "00000000";
+    signal blink_ctrl_6 : std_logic_vector(7 downto 0) := "00000000";
+    signal blink_ctrl_7 : std_logic_vector(7 downto 0) := "00000000";
 
 
 begin
 	
+
+	buttons(3) <= UP;
+	buttons(2) <= LEFT;
+	buttons(1) <= RIGHT;
+	buttons(0) <= DOWN;
+
+
 	----------------------------------------------------------------------------
 	--                  COMPONENTES GENERALES
 	----------------------------------------------------------------------------
@@ -169,7 +206,7 @@ begin
 	    Port map (
 	        digits_0to3 => digits_0to3,
 	        digits_4to7 => digits_4to7,
-	        blink_pairs => ,
+	        blink_pairs => blink_pairs,
 	        CLK => CLK100MHZ,
 	        SEGMENT_CRTL => SEGMENT,
 	        digctrl_CTRL => digctrl
@@ -196,7 +233,7 @@ begin
 		);
 		Port map (
 	        clk => CLK100MHZ,
-	        counter_in => ,
+	        counter_in => OK,
 	        counter_out => mode
 	    );
 
@@ -253,6 +290,36 @@ begin
 
 
 
+	mux16_2 : mux16_nc
+	    generic map (
+	        CHANEL_LENGTH : integer := 8
+	    );
+	    PORT map(
+	        in0 => digits_4to7_0,
+	        in1 => digits_4to7_1,
+	        in2 => digits_4to7_2,
+	        in3 => digits_4to7_3,
+	        in4 => digits_4to7_4,
+	        in5 => digits_4to7_5,
+	        in6 => digits_4to7_6,
+	        in7 => digits_4to7_7,
+	        in8 => digits_4to7_8,
+	        in9 => digits_4to7_9,
+	        in10 => digits_4to7_10,
+	        in11 => digits_4to7_11,
+	        in12 => digits_4to7_12,
+	        in13 => digits_4to7_13,
+	        in14 => digits_4to7_14,
+	        in15 => digits_4to7_15,
+	        select_c => mode,
+	        out_c => digits_4to7
+	    );
+
+
+
+
+
+
 
 	----------------------------------------------------------------------------
 	--                    ESTADOS DEL SISTEMA
@@ -280,6 +347,18 @@ begin
 
 
 	-- 7. Configuración 12/24h
+	config_12_24 : display_12_24
+	    Port map (
+	        mode => mode,
+	        buttons => buttons,
+	        digits_0to3 => digits_0to3_7,
+	        digits_4to7 => digits_4to7_7,
+	        blink_ctrl => blink_ctrl_7,
+	        out_mode => out_mode_12_24
+	    );
+
+
+
 
 
 
