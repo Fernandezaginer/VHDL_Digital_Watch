@@ -7,6 +7,7 @@ LIBRARY ieee;
 USE ieee.std_logic_1164.ALL;
 USE ieee.std_logic_arith.ALL;
 USE ieee.std_logic_unsigned.ALL;
+use IEEE.NUMERIC_STD.ALL;
 library UNISIM;
 use UNISIM.VComponents.all;
 
@@ -29,7 +30,7 @@ begin
     process(clk)
     begin
         if rising_edge(clk) then
-            if rising_edge(counter_in) then
+            if counter_in = '1' then
 	            var_contador <= var_contador + 1;
 	            if var_contador > max_count then
 		            var_contador <= 0;
@@ -37,13 +38,5 @@ begin
             end if;
         end if;
     end process;
-    counter_out <= std_logic_vector(to_unsigned(var_contador,4));
+    counter_out <= std_logic_vector(to_signed(var_contador,4));
 end Behavioral;
-
-
-
-
-
-
-
-

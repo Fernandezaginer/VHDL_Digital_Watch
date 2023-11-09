@@ -23,7 +23,8 @@ entity bcd_adder is
 		out0 : out std_logic_vector(3 downto 0);
 		out1 : out std_logic_vector(3 downto 0);
 		out2 : out std_logic_vector(3 downto 0);
-		out3 : out std_logic_vector(3 downto 0)
+		out3 : out std_logic_vector(3 downto 0);
+		carry : out std_logic_vector(3 downto 0)
 	);
 end entity;
 
@@ -61,7 +62,7 @@ begin
 	adder2 :  bcd_adder
 		port map (
 			clk => clk,
-			suma => c0
+			suma => c0,
 			in0 => in1,
 			out0 => out1,
 			carry => c1
@@ -71,7 +72,7 @@ begin
 	adder3 :  bcd_adder
 		port map (
 			clk => clk,
-			suma => c1
+			suma => c1,
 			in0 => in2,
 			out0 => out2,
 			carry => c2
@@ -81,7 +82,7 @@ begin
 	adder4 :  bcd_adder
 		port map (
 			clk => clk,
-			suma => c2
+			suma => c2,
 			in0 => in3,
 			out0 => out3,
 			carry => carry

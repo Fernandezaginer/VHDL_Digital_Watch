@@ -28,18 +28,18 @@ architecture Behavioral of bcd_adder is
 begin
 	process(clk)
 	begin
-		integer_in <= signed(to_integer(in0));
-		integer_suma <= signed(to_integer(suma));
-		integer_out = integer_in + integer_suma;
+		--integer_in <= TO_INTEGER(signed(in0));
+		--integer_suma <= TO_INTEGER(signed(suma));
+		integer_out <= integer_in + integer_suma;
 
 		if integer_out < 10 then
-			out0 <= std_logic_vector(to_signed(integer_out,4));
+			--out0 <= std_logic_vector(to_signed(integer_out,4));
 			carry <= "0000";
 		else
-			out0 <= std_logic_vector(to_signed(integer_out - 10,4));
+            --out0 <= std_logic_vector(to_signed(integer_out - 10,4));
 			carry <= "0001";			
-		end if;
-	end process
+		end if; 
+	end process;
 end Behavioral;
 
 

@@ -18,11 +18,11 @@ entity button_interface is
 		RIGHT_SW : in std_logic;
 		DOWN_SW : in std_logic;
 		OK_SW : in std_logic;
-		UP : in std_logic;
-		LEFT : in std_logic;
-		RIGHT : in std_logic;
-		DOWN : in std_logic;
-		OK : in std_logic
+		UP : out std_logic;
+		LEFT : out std_logic;
+		RIGHT : out std_logic;
+		DOWN : out std_logic;
+		OK : out std_logic
 	);
 
 end button_interface;
@@ -66,6 +66,6 @@ begin
 	SYNCHRNZR_ok : SYNCHRNZR port map (CLK => CLK, ASYNC_IN => OK_SW, SYNC_OUT => s_ok);
 	EDGEDTCTR_ok : EDGEDTCTR port map (CLK => CLK, SYNC_IN => s_ok, EDGE => OK);
 
-end Structual
+end Structual;
 
 
