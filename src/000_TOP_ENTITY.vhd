@@ -149,7 +149,7 @@ begin
 
 	contador : control_counter
 		generic map(
-			max_count => 7
+			max_count => 8
 		)
 		Port map (
 	        clk => CLK100MHZ,
@@ -255,22 +255,31 @@ begin
 	--                    ESTADOS DEL SISTEMA
 	----------------------------------------------------------------------------
 	
-	-- 0. Contador de hora
+	-- 0. Contador de hora (Test 12:37 11.13)
+	digits_0to3_0 <= "0001001000110111";
+	digits_4to7_0 <= "0001001100010001";
+ 	
+	-- 1. Modo configuración hora
+	digits_0to3_1 <= "0001001000110111";
+	digits_4to7_1 <= "1111111111111111";
+	blink_ctrl_1 <= "11000000"
+	
+	-- 2. Modo configuración de fecha	
+	digits_0to3_2 <= "1111111111111111";
+	digits_4to7_2 <= "0001001100010001";
+	blink_ctrl_2 <= "00001100"
+	
+
+	-- 3. Modo configuración de año
+
+	
+	-- 4. Configuracion de la alarma
 	
 	
-	-- 1. Contador de fecha
-	
-	
-	-- 2. Contador de año
-	
-	
-	-- 3. Alarma
-	
-	
-	-- 4. Dias de la semana de la alarma
+	-- 5. Dias de la semana de la alarma
 	selector_de_dias_alarma : day_alarm_selec
 		generic map(
-			MODE_NUM => "0100"
+			MODE_NUM => "0101"
 			);
 		port map(
 			moe => mode,
@@ -282,16 +291,16 @@ begin
 	        day_sel => selected_days_alm
 		);
 	
-	-- 5. Cronometro
+	-- 6. Cronometro
 	
 	
-	-- 6. Cuenta atrás
+	-- 7. Cuenta atrás
 	
 	
-	-- 7. Configuración 12/24h
+	-- 8. Configuración 12/24h
 	config_12_24 : display_12_24
 		generic map(
-			MODE_NUM => "0111"
+			MODE_NUM => "1000"
 			);
 	    Port map (
             clk => CLK100MHZ,
