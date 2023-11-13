@@ -36,10 +36,10 @@ BEGIN
     "0010000" WHEN "1001",
     "0011100" WHEN "1010",  -- º
     "1000110" WHEN "1011",  -- C
-    "0101001" WHEN "1100",  -- h
+    "0001011" WHEN "1100",  -- h
     "1111111" WHEN others;
 
-    -- Dias de la semana
+    -- Dias de la semana ?
     -- gfedcba
     --WITH code SELECT
     --led <= "1110001" WHEN "0000", --L
