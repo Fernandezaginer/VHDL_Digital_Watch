@@ -36,18 +36,24 @@ begin
 	
 
 	-- activate / deactivate days
-	process(CLK)
-	begin
-		if buttons(0) = '1' and mode = MODE_NUM then         -- activate
-			out_sel_days(selected_day) = '1';
-		elsif buttons(1) = '1' and mode = MODE_NUM then      -- left
-			selected_day <= selected_day - 1 when (selected_day - 1 >= 0) else 0
-		elsif buttons(2) = '1' and mode = MODE_NUM then      -- right
-			selected_day <= selected_day + 1 when (selected_day + 1 <= 6) else 6
-		elsif buttons(3) = '1' and mode = MODE_NUM then      -- deactivate
-			out_sel_days(selected_day) = '0';
-		end if;
-	end process;
+    process(CLK)
+    begin
+        if buttons(0) = '1' and mode = MODE_NUM then         -- activate
+            out_sel_days(selected_day) <= '1';
+        elsif buttons(1) = '1' and mode = MODE_NUM then      -- left
+            selected_day <= selected_day - 1;
+            if selected_day < 0 then
+                selected_day <= 0;
+            end if;
+        elsif buttons(2) = '1' and mode = MODE_NUM then      -- right
+            selected_day <= selected_day + 1;
+            if selected_day > 6 then
+                selected_day <= 6;
+            end if;
+        elsif buttons(3) = '1' and mode = MODE_NUM then      -- deactivate
+            out_sel_days(selected_day) <= '0';
+        end if;
+    end process;
 	
 	
 	-- blink control
@@ -84,7 +90,7 @@ begin
 	with out_sel_days(6) select
 	digits_4to7(7 downto 4) <= "0111" when '1',
 		"0000" when others;
-	digits_4to7(3 downto 0) <= "000";
+	digits_4to7(3 downto 0) <= "0000";
 
 
 	-- output
