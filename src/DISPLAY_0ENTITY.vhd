@@ -9,6 +9,8 @@ USE ieee.std_logic_unsigned.ALL;
 library UNISIM;
 use UNISIM.VComponents.all;
 
+
+
 entity display is
     Port (
         digits_0to3 : in std_logic_vector(15 downto 0);
@@ -19,9 +21,6 @@ entity display is
         digctrl_CTRL : out STD_LOGIC_VECTOR (7 downto 0)
     );
 end display;
-
-
-
 
 architecture Behavioral of display is
     
@@ -144,4 +143,8 @@ begin
 
 end Behavioral;
 
+
+
+
+    
 

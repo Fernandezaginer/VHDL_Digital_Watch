@@ -9,6 +9,9 @@ USE ieee.std_logic_unsigned.ALL;
 library UNISIM;
 use UNISIM.VComponents.all;
 
+use work.my_components.all;
+
+
 
 entity TOP is
     Port (
@@ -20,112 +23,12 @@ entity TOP is
 		BTNC : in std_logic;
 		BTNL : in std_logic;
 		BTNR : in std_logic;
-		BTND : in std_logic
+		BTND : in std_logic;
+		BUZZER : out std_logic
     );
 end TOP;
 
 architecture Structual of TOP is
-
-	----------------------------------------------------------------------------
-	--                           I/O
-	----------------------------------------------------------------------------
-
-	component display is
-	    Port (
-	        digits_0to3 : in std_logic_vector(15 downto 0);
-	        digits_4to7 : in std_logic_vector(15 downto 0);
-	        blink_ctrl : in std_logic_vector(7 downto 0);
-	        CLK  : in std_logic;
-	        SEGMENT_CRTL : out STD_LOGIC_VECTOR (6 downto 0);
-	        digctrl_CTRL : out STD_LOGIC_VECTOR (7 downto 0)
-	    );
-	end component;
-
-	component button_interface is
-		Port(
-	        CLK : in std_logic;
-			UP_SW : in std_logic;
-			LEFT_SW : in std_logic;
-			RIGHT_SW : in std_logic;
-			DOWN_SW : in std_logic;
-			OK_SW : in std_logic;
-			UP : out std_logic;
-			LEFT : out std_logic;
-			RIGHT : out std_logic;
-			DOWN : out std_logic;
-			OK : out std_logic
-		);
-	end component;
-
-
-
-
-	----------------------------------------------------------------------------
-	--                           INTERNAL
-	----------------------------------------------------------------------------
-
-	component mux16_nc IS
-	    generic (
-	        CHANEL_LENGTH : integer := 16
-	    );
-	    PORT (
-	        in0 : IN std_logic_vector(CHANEL_LENGTH - 1 DOWNTO 0);
-	        in1 : IN std_logic_vector(CHANEL_LENGTH - 1 DOWNTO 0);
-	        in2 : IN std_logic_vector(CHANEL_LENGTH - 1 DOWNTO 0);
-	        in3 : IN std_logic_vector(CHANEL_LENGTH - 1 DOWNTO 0);
-	        in4 : IN std_logic_vector(CHANEL_LENGTH - 1 DOWNTO 0);
-	        in5 : IN std_logic_vector(CHANEL_LENGTH - 1 DOWNTO 0);
-	        in6 : IN std_logic_vector(CHANEL_LENGTH - 1 DOWNTO 0);
-	        in7 : IN std_logic_vector(CHANEL_LENGTH - 1 DOWNTO 0);
-	        in8 : IN std_logic_vector(CHANEL_LENGTH - 1 DOWNTO 0);
-	        in9 : IN std_logic_vector(CHANEL_LENGTH - 1 DOWNTO 0);
-	        in10 : IN std_logic_vector(CHANEL_LENGTH - 1 DOWNTO 0);
-	        in11 : IN std_logic_vector(CHANEL_LENGTH - 1 DOWNTO 0);
-	        in12 : IN std_logic_vector(CHANEL_LENGTH - 1 DOWNTO 0);
-	        in13 : IN std_logic_vector(CHANEL_LENGTH - 1 DOWNTO 0);
-	        in14 : IN std_logic_vector(CHANEL_LENGTH - 1 DOWNTO 0);
-	        in15 : IN std_logic_vector(CHANEL_LENGTH - 1 DOWNTO 0);
-	        select_c : IN std_logic_vector(3 DOWNTO 0);
-	        out_c : OUT std_logic_vector(CHANEL_LENGTH - 1 DOWNTO 0)
-	    );
-	END component;
-
-
-	component control_counter is
-		generic(
-			max_count : integer := 8
-		);
-		Port (
-	        clk : in std_logic;
-	        counter_in : in std_logic;
-	        counter_out : out std_logic_vector(3 downto 0)
-	    );
-	end component;
-
-
-	component display_12_24 is
-	    Port (
-            clk : in std_logic;
-	        mode: in std_logic_vector(3 downto 0);
-	        buttons: in std_logic_vector(3 downto 0);
-	        digits_0to3 : out std_logic_vector(15 downto 0);
-	        digits_4to7 : out std_logic_vector(15 downto 0);
-	        blink_ctrl : out std_logic_vector(7 downto 0);
-	        out_mode : out std_logic
-	    );
-	end component;
-
-
-
-	----------------------------------------------------------------------------
-	--                      FUNCIONALIDADES
-	----------------------------------------------------------------------------
-
-
-
-
-
-
 
 
 
@@ -147,6 +50,12 @@ architecture Structual of TOP is
     signal digits_0to3 : std_logic_vector(15 downto 0);
     signal digits_4to7 : std_logic_vector(15 downto 0);
     signal blink_ctrl : std_logic_vector(7 downto 0);
+
+    signal alarma_1_on : std_logic;
+    signal alarma_2_on : std_logic;
+
+    signal selected_days_alm : std_logic_vector(6 downto 0);
+
 
     signal digits_0to3_0 : std_logic_vector(15 downto 0) := "0000000000000000";
     signal digits_4to7_0 : std_logic_vector(15 downto 0) := "0000000000000000";
@@ -249,6 +158,16 @@ begin
 	        counter_out => mode
 	    );
 
+	alarma_sonora : alarma
+		port map (
+			clk => CLK100MHZ,
+			on1 => alarma_1_on,
+			on2 => alarma_2_on,
+			buzzer => BUZZER,
+			buttons_beep => buttons,
+			mode_beep => OK
+		);	
+
 
 	mux16_0 : mux16_nc
 	    generic map (
@@ -338,26 +257,34 @@ begin
 	----------------------------------------------------------------------------
 	
 	-- 0. Contador de hora
-
-
+	
+	
 	-- 1. Contador de fecha
-
-
+	
+	
 	-- 2. Contador de año
-
-
+	
+	
 	-- 3. Alarma
-
-
+	
+	
 	-- 4. Dias de la semana de la alarma
-
-
+	selector_de_dias_alarma : day_alarm_selec
+		port map(
+	        digits_0to3 => digits_0to3_4,
+	        digits_4to7 => digits_4to7_4,
+	        blink_ctrl => blink_ctrl_4,
+	        CLK => CLK100MHZ,
+	        buttons => buttons,
+	        day_sel => selected_days_alm
+		);
+	
 	-- 5. Cronometro
-
-
+	
+	
 	-- 6. Cuenta atrás
-
-
+	
+	
 	-- 7. Configuración 12/24h
 	config_12_24 : display_12_24
 	    Port map (
