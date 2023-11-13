@@ -1,5 +1,4 @@
 -- Trabajo SED 23/24 Grupo 2
--- Modulo display
 -- Entidad de configuración de la
 -- visualizacion en formato 12h/24h
 
