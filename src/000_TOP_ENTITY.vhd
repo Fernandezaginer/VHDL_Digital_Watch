@@ -56,41 +56,40 @@ architecture Structual of TOP is
 
     signal selected_days_alm : std_logic_vector(6 downto 0);
 
+    signal digits_0to3_0 : std_logic_vector(15 downto 0) := "1111111111111111";
+    signal digits_4to7_0 : std_logic_vector(15 downto 0) := "1111111111111111";
+    signal digits_0to3_1 : std_logic_vector(15 downto 0) := "1111111111111111";
+    signal digits_4to7_1 : std_logic_vector(15 downto 0) := "1111111111111111";
+    signal digits_0to3_2 : std_logic_vector(15 downto 0) := "1111111111111111";
+    signal digits_4to7_2 : std_logic_vector(15 downto 0) := "1111111111111111";
+    signal digits_0to3_3 : std_logic_vector(15 downto 0) := "1111111111111111";
+    signal digits_4to7_3 : std_logic_vector(15 downto 0) := "1111111111111111";
+    signal digits_0to3_4 : std_logic_vector(15 downto 0) := "1111111111111111";
+    signal digits_4to7_4 : std_logic_vector(15 downto 0) := "1111111111111111";
+    signal digits_0to3_5 : std_logic_vector(15 downto 0) := "1111111111111111";
+    signal digits_4to7_5 : std_logic_vector(15 downto 0) := "1111111111111111";
+    signal digits_0to3_6 : std_logic_vector(15 downto 0) := "1111111111111111";
+    signal digits_4to7_6 : std_logic_vector(15 downto 0) := "1111111111111111";
+    signal digits_0to3_7 : std_logic_vector(15 downto 0) := "1111111111111111";
+    signal digits_4to7_7 : std_logic_vector(15 downto 0) := "1111111111111111";
 
-    signal digits_0to3_0 : std_logic_vector(15 downto 0) := "0000000000000000";
-    signal digits_4to7_0 : std_logic_vector(15 downto 0) := "0000000000000000";
-    signal digits_0to3_1 : std_logic_vector(15 downto 0) := "0000000000000000";
-    signal digits_4to7_1 : std_logic_vector(15 downto 0) := "0000000000000000";
-    signal digits_0to3_2 : std_logic_vector(15 downto 0) := "0000000000000000";
-    signal digits_4to7_2 : std_logic_vector(15 downto 0) := "0000000000000000";
-    signal digits_0to3_3 : std_logic_vector(15 downto 0) := "0000000000000000";
-    signal digits_4to7_3 : std_logic_vector(15 downto 0) := "0000000000000000";
-    signal digits_0to3_4 : std_logic_vector(15 downto 0) := "0000000000000000";
-    signal digits_4to7_4 : std_logic_vector(15 downto 0) := "0000000000000000";
-    signal digits_0to3_5 : std_logic_vector(15 downto 0) := "0000000000000000";
-    signal digits_4to7_5 : std_logic_vector(15 downto 0) := "0000000000000000";
-    signal digits_0to3_6 : std_logic_vector(15 downto 0) := "0000000000000000";
-    signal digits_4to7_6 : std_logic_vector(15 downto 0) := "0000000000000000";
-    signal digits_0to3_7 : std_logic_vector(15 downto 0) := "0000000000000000";
-    signal digits_4to7_7 : std_logic_vector(15 downto 0) := "0000000000000000";
 
-
-    signal digits_0to3_8 : std_logic_vector(15 downto 0) := "0000000000000000";
-    signal digits_4to7_8 : std_logic_vector(15 downto 0) := "0000000000000000";
-    signal digits_0to3_9 : std_logic_vector(15 downto 0) := "0000000000000000";
-    signal digits_4to7_9 : std_logic_vector(15 downto 0) := "0000000000000000";
-    signal digits_0to3_10 : std_logic_vector(15 downto 0) := "0000000000000000";
-    signal digits_4to7_10 : std_logic_vector(15 downto 0) := "0000000000000000";
-    signal digits_0to3_11 : std_logic_vector(15 downto 0) := "0000000000000000";
-    signal digits_4to7_11 : std_logic_vector(15 downto 0) := "0000000000000000";
-    signal digits_0to3_12 : std_logic_vector(15 downto 0) := "0000000000000000";
-    signal digits_4to7_12 : std_logic_vector(15 downto 0) := "0000000000000000";
-    signal digits_0to3_13 : std_logic_vector(15 downto 0) := "0000000000000000";
-    signal digits_4to7_13 : std_logic_vector(15 downto 0) := "0000000000000000";
-    signal digits_0to3_14 : std_logic_vector(15 downto 0) := "0000000000000000";
-    signal digits_4to7_14 : std_logic_vector(15 downto 0) := "0000000000000000";
-    signal digits_0to3_15 : std_logic_vector(15 downto 0) := "0000000000000000";
-    signal digits_4to7_15 : std_logic_vector(15 downto 0) := "0000000000000000";
+    signal digits_0to3_8 : std_logic_vector(15 downto 0) := "1111111111111111";
+    signal digits_4to7_8 : std_logic_vector(15 downto 0) := "1111111111111111";
+    signal digits_0to3_9 : std_logic_vector(15 downto 0) := "1111111111111111";
+    signal digits_4to7_9 : std_logic_vector(15 downto 0) := "1111111111111111";
+    signal digits_0to3_10 : std_logic_vector(15 downto 0) := "1111111111111111";
+    signal digits_4to7_10 : std_logic_vector(15 downto 0) := "1111111111111111";
+    signal digits_0to3_11 : std_logic_vector(15 downto 0) := "1111111111111111";
+    signal digits_4to7_11 : std_logic_vector(15 downto 0) := "1111111111111111";
+    signal digits_0to3_12 : std_logic_vector(15 downto 0) := "1111111111111111";
+    signal digits_4to7_12 : std_logic_vector(15 downto 0) := "1111111111111111";
+    signal digits_0to3_13 : std_logic_vector(15 downto 0) := "1111111111111111";
+    signal digits_4to7_13 : std_logic_vector(15 downto 0) := "1111111111111111";
+    signal digits_0to3_14 : std_logic_vector(15 downto 0) := "1111111111111111";
+    signal digits_4to7_14 : std_logic_vector(15 downto 0) := "1111111111111111";
+    signal digits_0to3_15 : std_logic_vector(15 downto 0) := "1111111111111111";
+    signal digits_4to7_15 : std_logic_vector(15 downto 0) := "1111111111111111";
 
     signal blink_ctrl_0 : std_logic_vector(7 downto 0) := "00000000";
     signal blink_ctrl_1 : std_logic_vector(7 downto 0) := "00000000";
@@ -270,7 +269,11 @@ begin
 	
 	-- 4. Dias de la semana de la alarma
 	selector_de_dias_alarma : day_alarm_selec
+		generic map(
+			MODE_NUM => "0100"
+			);
 		port map(
+			moe => mode,
 	        digits_0to3 => digits_0to3_4,
 	        digits_4to7 => digits_4to7_4,
 	        blink_ctrl => blink_ctrl_4,
@@ -287,6 +290,9 @@ begin
 	
 	-- 7. Configuración 12/24h
 	config_12_24 : display_12_24
+		generic map(
+			MODE_NUM => "0111"
+			);
 	    Port map (
             clk => CLK100MHZ,
             mode => mode,

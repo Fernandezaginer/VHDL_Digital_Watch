@@ -15,6 +15,9 @@ use UNISIM.VComponents.all;
 
 
 entity display_12_24 is
+    generic(
+        MODE_NUM : std_logic_vector(3 downto 0) := "1111"
+        );
     Port (
         clk : in std_logic;
         mode: in std_logic_vector(3 downto 0);
@@ -32,15 +35,15 @@ architecture Behavioral of display_12_24 is
 begin
     process(clk)
 	begin
-	   if (buttons = "1000" and mode = "1000") then
+	   if (buttons = "1000" and mode = MODE_NUM) then
 	       out_mode_s <= '1';
-	   elsif (buttons = "0001" and mode = "1000") then
+	   elsif (buttons = "0001" and mode = MODE_NUM) then
 	       out_mode_s <= '0';
        end if;	   
 	end process;
     out_mode <= out_mode_s;
-	digits_0to3 <= "0010010000001100" when out_mode_s = '1' else "0001001000001100";
-	digits_4to7 <= "0000000000000000" when out_mode_s = '1' else "0000000000000000";
+	digits_0to3 <= "0010010011111100" when out_mode_s = '1' else "0001001011111100";
+	digits_4to7 <= "1111111111111111" when out_mode_s = '1' else "1111111111111111";
     blink_ctrl <= "11110000";
 end Behavioral;
 

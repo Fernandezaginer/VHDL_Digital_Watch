@@ -18,8 +18,11 @@ package my_components is
 	----------------------------------------------------------------------------
 
 	component display_12_24 is
+	    generic(
+	        MODE_NUM : std_logic_vector(3 downto 0) := "1111"
+        );
 	    Port (
-            clk : in std_logic;
+	        clk : in std_logic;
 	        mode: in std_logic_vector(3 downto 0);
 	        buttons: in std_logic_vector(3 downto 0);
 	        digits_0to3 : out std_logic_vector(15 downto 0);
@@ -31,7 +34,11 @@ package my_components is
 
 
 	component day_alarm_selec is
+    	generic(
+        	MODE_NUM : std_logic_vector(3 downto 0) := "1111"
+        );
 		port(
+	        mode: in std_logic_vector(3 downto 0);
 	        digits_0to3 : out std_logic_vector(15 downto 0);
 	        digits_4to7 : out std_logic_vector(15 downto 0);
 	        blink_ctrl : out std_logic_vector(7 downto 0);
