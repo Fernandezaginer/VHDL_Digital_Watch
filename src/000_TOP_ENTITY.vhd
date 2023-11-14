@@ -189,7 +189,7 @@ architecture Structual of TOP is
 	--                     SEÑALES GENERALES
 	----------------------------------------------------------------------------
 
-	constant MODE_DAY_SELECT : std_logic_vector(3 downto 0) := "0100"; 
+	constant MODE_DAY_SELECT : std_logic_vector(3 downto 0) := "0101"; 
 
 	signal mode : std_logic_vector(3 downto 0) := "0000";
 	signal UP : std_logic := '0';
@@ -267,10 +267,10 @@ architecture Structual of TOP is
 begin
 	
 
-	buttons(3) <= UP;
-	buttons(2) <= LEFT;
-	buttons(1) <= RIGHT;
-	buttons(0) <= DOWN;
+	buttons(0) <= UP;
+	buttons(1) <= LEFT;
+	buttons(2) <= RIGHT;
+	buttons(3) <= DOWN;
 
 
 	----------------------------------------------------------------------------
@@ -308,7 +308,7 @@ begin
 
 	contador : control_counter
 		generic map(
-			max_count => 8
+			max_count => 7
 		)
 		Port map (
 	        clk => CLK100MHZ,
@@ -430,7 +430,10 @@ begin
 	
 
 	-- 3. Modo configuración de año
-
+	digits_0to3_3 <= "0010000000100011";
+	digits_4to7_3 <= "1111111111111111";
+	blink_ctrl_3 <= "11110000";
+	
 	
 	-- 4. Configuracion de la alarma
 	
@@ -443,9 +446,9 @@ begin
 			)
 		port map(
 			mode => mode,
-	        digits_0to3 => digits_0to3_4,
-	        digits_4to7 => digits_4to7_4,
-	        blink_ctrl => blink_ctrl_4,
+	        digits_0to3 => digits_0to3_5,
+	        digits_4to7 => digits_4to7_5,
+	        blink_ctrl => blink_ctrl_5,
 	        CLK => CLK100MHZ,
 	        buttons => buttons,
 	        day_sel => selected_days_alm
@@ -466,9 +469,9 @@ begin
             clk => CLK100MHZ,
             mode => mode,
 	        buttons => buttons,
-	        digits_0to3 => digits_0to3_7,
-	        digits_4to7 => digits_4to7_7,
-	        blink_ctrl => blink_ctrl_7,
+	        digits_0to3 => digits_0to3_8,
+	        digits_4to7 => digits_4to7_8,
+	        blink_ctrl => blink_ctrl_8,
 	        out_mode => out_mode_12_24
 	    );
 

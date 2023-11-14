@@ -48,8 +48,8 @@ BEGIN
     -- Dias de la semana
     WITH code SELECT
     led_dias_semana <= "1110001" WHEN "0000", --L
-        "0110111" WHEN "0001", -- M
-        "1110110" WHEN "0010", -- X
+        "1001000" WHEN "0001", -- M
+        "0001001" WHEN "0010", -- X
         "1100001" WHEN "0011", -- J
         "1000001" WHEN "0100", -- V
         "0010010" WHEN "0101", -- S

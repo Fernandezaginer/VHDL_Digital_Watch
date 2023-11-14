@@ -104,7 +104,7 @@ begin
 
     -- Clock blink
     div_freq_blink : Prescaler generic map(
-            DIVIDER_VALUE => 100000000
+            DIVIDER_VALUE => 50000000
     )
     port map(
         clk_in => CLK,
