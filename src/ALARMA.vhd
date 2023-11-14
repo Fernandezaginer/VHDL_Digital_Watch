@@ -41,14 +41,14 @@ architecture Behavioral of alarma is
 begin
 	
 	-- beep buttons
-	process(CLK)
-	begin
-		if buttons_beep(0) = '1' or buttons_beep(1) = '1' or buttons_beep(2) = '1' or buttons_beep(3) = '1' then
-			on3 <= '1';
-			wait for 100 ms;
-			on3 <= '0';
-		end if;
-	end process;
+--	process(CLK)
+--	begin
+--		if buttons_beep(0) = '1' or buttons_beep(1) = '1' or buttons_beep(2) = '1' or buttons_beep(3) = '1' then
+--			on3 <= '1';
+--			wait for 100 ms;
+--			on3 <= '0';
+--		end if;
+--	end process;
 
 
 	-- tone frequency

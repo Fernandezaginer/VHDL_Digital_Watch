@@ -31,13 +31,13 @@ end display_12_24;
 
 
 architecture Behavioral of display_12_24 is
-    signal out_mode_s : std_logic := '0';
+    signal out_mode_s : std_logic := '1';
 begin
     process(clk)
 	begin
-	   if (buttons = "1000" and mode = MODE_NUM) then
+	   if (buttons = "0001" and mode = MODE_NUM) then
 	       out_mode_s <= '1';
-	   elsif (buttons = "0001" and mode = MODE_NUM) then
+	   elsif (buttons = "1000" and mode = MODE_NUM) then
 	       out_mode_s <= '0';
        end if;	   
 	end process;

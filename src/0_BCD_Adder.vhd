@@ -1,6 +1,6 @@
 -- Trabajo SED 23/24 Grupo 2
--- Varios modulos 
--- Sumador BCD
+-- Sumador BCD de 4 digitos
+-- Entidad general
 
 
 

@@ -9,8 +9,14 @@ USE ieee.std_logic_unsigned.ALL;
 library UNISIM;
 use UNISIM.VComponents.all;
 
+
+
 entity display is
+    generic(
+        MODE_DISP_CATODO : std_logic_vector(3 downto 0) := "1111"
+        );
     Port (
+        mode : in std_logic_vector(3 downto 0); 
         digits_0to3 : in std_logic_vector(15 downto 0);
         digits_4to7 : in std_logic_vector(15 downto 0);
         blink_ctrl : in std_logic_vector(7 downto 0);
@@ -19,9 +25,6 @@ entity display is
         digctrl_CTRL : out STD_LOGIC_VECTOR (7 downto 0)
     );
 end display;
-
-
-
 
 architecture Behavioral of display is
     
@@ -41,9 +44,13 @@ architecture Behavioral of display is
       );
     end component;
     component catodo_decoder IS
+        generic(
+            MODE_DISP_CATODO :std_logic_vector(3 downto 0) := "1111"
+            );
         PORT (
-        code : IN std_logic_vector(3 DOWNTO 0);
-        led : OUT std_logic_vector(6 DOWNTO 0)
+            mode : in std_logic_vector(3 downto 0);
+            code : IN std_logic_vector(3 DOWNTO 0);
+            led : OUT std_logic_vector(6 DOWNTO 0)
         );
     END component catodo_decoder;
     component mux8_4c IS
@@ -97,7 +104,7 @@ begin
 
     -- Clock blink
     div_freq_blink : Prescaler generic map(
-            DIVIDER_VALUE => 100000000
+            DIVIDER_VALUE => 50000000
     )
     port map(
         clk_in => CLK,
@@ -139,9 +146,15 @@ begin
 
 
     -- Catodos del display:
-    disp_decoder: catodo_decoder port map (LED => SEGMENT_CRTL, CODE => code_display_blink);
+    disp_decoder: catodo_decoder
+    generic map(MODE_DISP_CATODO => MODE_DISP_CATODO)
+    port map (mode => mode, LED => SEGMENT_CRTL, CODE => code_display_blink);
 
 
 end Behavioral;
 
+
+
+
+    
 

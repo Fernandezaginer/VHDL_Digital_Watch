@@ -9,6 +9,9 @@ USE ieee.std_logic_unsigned.ALL;
 library UNISIM;
 use UNISIM.VComponents.all;
 
+--use work.my_components.all;
+
+
 
 entity TOP is
     Port (
@@ -20,18 +23,63 @@ entity TOP is
 		BTNC : in std_logic;
 		BTNL : in std_logic;
 		BTNR : in std_logic;
-		BTND : in std_logic
+		BTND : in std_logic;
+		BUZZER : out std_logic
     );
 end TOP;
 
 architecture Structual of TOP is
+
+
+
+
+	----------------------------------------------------------------------------
+	--                          FUNCIONALIDADES
+	----------------------------------------------------------------------------
+
+	component display_12_24 is
+	    generic(
+	        MODE_NUM : std_logic_vector(3 downto 0) := "1111"
+        );
+	    Port (
+	        clk : in std_logic;
+	        mode: in std_logic_vector(3 downto 0);
+	        buttons: in std_logic_vector(3 downto 0);
+	        digits_0to3 : out std_logic_vector(15 downto 0);
+	        digits_4to7 : out std_logic_vector(15 downto 0);
+	        blink_ctrl : out std_logic_vector(7 downto 0);
+	        out_mode : out std_logic
+	    );
+	end component;
+
+
+	component day_alarm_selec is
+    	generic(
+        	MODE_NUM : std_logic_vector(3 downto 0) := "1111"
+        );
+		port(
+	        mode: in std_logic_vector(3 downto 0);
+	        digits_0to3 : out std_logic_vector(15 downto 0);
+	        digits_4to7 : out std_logic_vector(15 downto 0);
+	        blink_ctrl : out std_logic_vector(7 downto 0);
+	        CLK  : in std_logic;
+	        buttons: in std_logic_vector(3 downto 0);
+	        day_sel : out std_logic_vector(6 downto 0)
+		);
+	end component;
+
+
 
 	----------------------------------------------------------------------------
 	--                           I/O
 	----------------------------------------------------------------------------
 
 	component display is
+	    generic(
+	        MODE_DISP_CATODO : std_logic_vector(3 downto 0) := "1111"
+	        );
 	    Port (
+	        mode : in std_logic_vector(3 downto 0); 
 	        digits_0to3 : in std_logic_vector(15 downto 0);
 	        digits_4to7 : in std_logic_vector(15 downto 0);
 	        blink_ctrl : in std_logic_vector(7 downto 0);
@@ -55,6 +103,17 @@ architecture Structual of TOP is
 			DOWN : out std_logic;
 			OK : out std_logic
 		);
+	end component;
+
+	component alarma is
+		port(
+			clk : in std_logic;
+			on1 : in std_logic;
+			on2 : in std_logic;
+			buzzer : out std_logic;
+			buttons_beep : in std_logic_vector(3 downto 0);
+			mode_beep : in std_logic
+		);	
 	end component;
 
 
@@ -103,27 +162,20 @@ architecture Structual of TOP is
 	end component;
 
 
-	component display_12_24 is
-	    generic(
-	        MODE_NUM : std_logic_vector(3 downto 0) := "1111"
-        );
-	    Port (
-            clk : in std_logic;
-	        mode: in std_logic_vector(3 downto 0);
-	        buttons: in std_logic_vector(3 downto 0);
-	        digits_0to3 : out std_logic_vector(15 downto 0);
-	        digits_4to7 : out std_logic_vector(15 downto 0);
-	        blink_ctrl : out std_logic_vector(7 downto 0);
-	        out_mode : out std_logic
-	    );
-	end component;
-	
 
 
 
-	----------------------------------------------------------------------------
-	--                      FUNCIONALIDADES
-	----------------------------------------------------------------------------
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -136,6 +188,8 @@ architecture Structual of TOP is
 	----------------------------------------------------------------------------
 	--                     SEÑALES GENERALES
 	----------------------------------------------------------------------------
+
+	constant MODE_DAY_SELECT : std_logic_vector(3 downto 0) := "0101"; 
 
 	signal mode : std_logic_vector(3 downto 0) := "0000";
 	signal UP : std_logic := '0';
@@ -151,6 +205,11 @@ architecture Structual of TOP is
     signal digits_0to3 : std_logic_vector(15 downto 0);
     signal digits_4to7 : std_logic_vector(15 downto 0);
     signal blink_ctrl : std_logic_vector(7 downto 0);
+
+    signal alarma_1_on : std_logic;
+    signal alarma_2_on : std_logic;
+
+    signal selected_days_alm : std_logic_vector(6 downto 0);
 
     signal digits_0to3_0 : std_logic_vector(15 downto 0) := "1111111111111111";
     signal digits_4to7_0 : std_logic_vector(15 downto 0) := "1111111111111111";
@@ -208,10 +267,10 @@ architecture Structual of TOP is
 begin
 	
 
-	buttons(3) <= UP;
-	buttons(2) <= LEFT;
-	buttons(1) <= RIGHT;
-	buttons(0) <= DOWN;
+	buttons(0) <= UP;
+	buttons(1) <= LEFT;
+	buttons(2) <= RIGHT;
+	buttons(3) <= DOWN;
 
 
 	----------------------------------------------------------------------------
@@ -219,7 +278,11 @@ begin
 	----------------------------------------------------------------------------
 
 	displays_7seg: display
-	    Port map (
+	    generic map (
+	        MODE_DISP_CATODO => MODE_DAY_SELECT
+	        )
+	    port map (
+	    	mode => mode,
 	        digits_0to3 => digits_0to3,
 	        digits_4to7 => digits_4to7,
 	        blink_ctrl => blink_ctrl,
@@ -252,6 +315,16 @@ begin
 	        counter_in => OK,
 	        counter_out => mode
 	    );
+
+	alarma_sonora : alarma
+		port map (
+			clk => CLK100MHZ,
+			on1 => alarma_1_on,
+			on2 => alarma_2_on,
+			buzzer => BUZZER,
+			buttons_beep => buttons,
+			mode_beep => OK
+		);	
 
 
 	mux16_0 : mux16_nc
@@ -341,39 +414,64 @@ begin
 	--                    ESTADOS DEL SISTEMA
 	----------------------------------------------------------------------------
 	
-	-- 0. Contador de hora
+	-- 0. Contador de hora (Test 12:37 11.13)
+	digits_0to3_0 <= "0001001000110111";
+	digits_4to7_0 <= "0001001100010001";
+ 	
+	-- 1. Modo configuración hora
+	digits_0to3_1 <= "0001001000110111";
+	digits_4to7_1 <= "1111111111111111";
+	blink_ctrl_1 <= "11000000";
+	
+	-- 2. Modo configuración de fecha	
+	digits_0to3_2 <= "1111111111111111";
+	digits_4to7_2 <= "0001001100010001";
+	blink_ctrl_2 <= "00001100";
+	
 
-
-	-- 1. Contador de fecha
-
-
-	-- 2. Contador de año
-
-
-	-- 3. Alarma
-
-
-	-- 4. Dias de la semana de la alarma
-
-
-	-- 5. Cronometro
-
-
-	-- 6. Cuenta atrás
-
-
-	-- 7. Configuración 12/24h
+	-- 3. Modo configuración de año
+	digits_0to3_3 <= "0010000000100011";
+	digits_4to7_3 <= "1111111111111111";
+	blink_ctrl_3 <= "11110000";
+	
+	
+	-- 4. Configuracion de la alarma
+	
+	
+	-- 5. Dias de la semana de la alarma
+	selector_de_dias_alarma : day_alarm_selec
+		generic map(
+		    -- Definir arriba, porque aparece en otra parte del codigo
+			MODE_NUM => MODE_DAY_SELECT
+			)
+		port map(
+			mode => mode,
+	        digits_0to3 => digits_0to3_5,
+	        digits_4to7 => digits_4to7_5,
+	        blink_ctrl => blink_ctrl_5,
+	        CLK => CLK100MHZ,
+	        buttons => buttons,
+	        day_sel => selected_days_alm
+		);
+	
+	-- 6. Cronometro
+	
+	
+	-- 7. Cuenta atrás
+	
+	
+	-- 8. Configuración 12/24h
 	config_12_24 : display_12_24
 		generic map(
-			MODE_NUM => "0111"
-			);
+			MODE_NUM => "1000"
+			)
 	    Port map (
             clk => CLK100MHZ,
             mode => mode,
 	        buttons => buttons,
-	        digits_0to3 => digits_0to3_7,
-	        digits_4to7 => digits_4to7_7,
-	        blink_ctrl => blink_ctrl_7,
+	        digits_0to3 => digits_0to3_8,
+	        digits_4to7 => digits_4to7_8,
+	        blink_ctrl => blink_ctrl_8,
 	        out_mode => out_mode_12_24
 	    );
 

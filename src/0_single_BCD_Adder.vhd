@@ -1,4 +1,6 @@
-
+-- Trabajo SED 23/24 Grupo 2
+-- Sumador simple BCD
+-- Entidad general
 
 
 LIBRARY ieee;
