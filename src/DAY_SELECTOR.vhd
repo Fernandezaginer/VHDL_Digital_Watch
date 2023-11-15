@@ -38,20 +38,22 @@ begin
 	-- activate / deactivate days
     process(CLK)
     begin
-        if buttons = "0001" and mode = MODE_NUM then         -- activate
-            out_sel_days(selected_day) <= '1';
-        elsif buttons = "0010" and mode = MODE_NUM then      -- left
-            selected_day <= selected_day - 1;
-        elsif buttons = "0100" and mode = MODE_NUM then      -- right
-            selected_day <= selected_day + 1;
-        elsif buttons = "1000" and mode = MODE_NUM then      -- deactivate
-            out_sel_days(selected_day) <= '0';
-        end if;
-        if selected_day < 0 then
-            selected_day <= 0;
-        end if;
-        if selected_day > 6 then
-            selected_day <= 6;
+    	if rising_edge(clk) and mode = MODE_NUM then
+	        if buttons = "0001" then         -- activate
+	            out_sel_days(selected_day) <= '1';
+	        elsif buttons = "0010" then      -- left
+	            selected_day <= selected_day - 1;
+	        elsif buttons = "0100" then      -- right
+	            selected_day <= selected_day + 1;
+	        elsif buttons = "1000" then      -- deactivate
+	            out_sel_days(selected_day) <= '0';
+	        end if;
+	        if selected_day < 0 then
+	            selected_day <= 0;
+	        end if;
+	        if selected_day > 6 then
+	            selected_day <= 6;
+	        end if;
         end if;
     end process;
 	
