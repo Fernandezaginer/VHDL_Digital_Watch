@@ -15,14 +15,44 @@ entity Cronometro is
 end Cronometro;
 
 architecture Behavioral of Cronometro is
+--Declaración Prescaler
+    component Prescaler is
+        generic (
+            DIVIDER_VALUE : integer := 2
+        );
+        Port (
+            clk_in  : in  STD_LOGIC;
+            clk_out : out STD_LOGIC
+        );
+    end component;
+--Señales    
     signal clkSec: std_logic ;  --Reloj periodo 1 sec
-    signal clkMin: std_logic ;  --Reloj periodo 1 min
-    signal clkHora: std_logic ; --reloj periodo 1 hora
     signal udsSecs: std_logic_vector(3 downto 0);
     signal decSecs: std_logic_vector(3 downto 0);
     signal udsMin: std_logic_vector(3 downto 0);
     signal decMin: std_logic_vector(3 downto 0); 
+     
+--S0=reset||S1=play||S2=pause
+    type STATES is (S0,S1,S2);
+    signal currentState: STATES := S0;
+    signal nextState: STATES;
 begin
-
-
+-- Clocks mult
+    div_cll_sec : Prescaler generic map(
+            DIVIDER_VALUE => 100000000 --Paso de frec a 1 sec 
+    )
+    port map(
+        clk_in => clk,
+        clk_out => clkSec
+    );
+--Paso a sig estado
+    process (buttons, clkSec)
+    begin
+        if buttons = "0100" then
+            currentState <= S0;
+        elsif clkSec'event and clkSec = '1' then
+            currentState <= nextState;
+        end if;
+    end process;   
+    
 end Behavioral;
