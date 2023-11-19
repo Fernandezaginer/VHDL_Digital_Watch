@@ -25,6 +25,7 @@ architecture Behavioral of Cronometro is
             clk_out : out STD_LOGIC
         );
     end component;
+    
 --Señales    
     signal clkSec: std_logic ;  --Reloj periodo 1 sec
     signal udsSecs: std_logic_vector(3 downto 0);
@@ -37,6 +38,7 @@ architecture Behavioral of Cronometro is
     signal currentState: STATES := S0;
     signal nextState: STATES;
 begin
+
 -- Clocks mult
     div_cll_sec : Prescaler generic map(
             DIVIDER_VALUE => 100000000 --Paso de frec a 1 sec 
@@ -45,6 +47,7 @@ begin
         clk_in => clk,
         clk_out => clkSec
     );
+    
 --Paso a sig estado
     process (buttons, clkSec)
     begin
@@ -55,4 +58,31 @@ begin
         end if;
     end process;   
     
+--Cambio estado
+process (buttons, currentState)
+    begin
+        nextState <= currentState;
+        case currentState is
+            when S0 =>
+                if buttons = "0001" then
+                    nextState <= S1;
+                end if;
+            when S1 =>
+                if buttons = "0100" then
+                    nextState <= S0;
+                elsif buttons = "0010" then
+                    nextState <= S2;
+                end if;
+            when S2 =>
+                if buttons = "0100" then
+                    nextState <= S0;
+                elsif buttons = "0001" then
+                    nextState <= S1;
+                end if;            
+            when others =>
+                nextState <= S0;
+        end case;
+    end process;   
+
+
 end Behavioral;
