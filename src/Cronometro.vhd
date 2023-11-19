@@ -29,10 +29,10 @@ architecture Behavioral of Cronometro is
     
 --Señales    
     signal clkSec: std_logic ;  --Reloj periodo 1 sec
-    signal udsSecs: std_logic_vector(3 downto 0);
-    signal decSecs: std_logic_vector(3 downto 0);
-    signal udsMin: std_logic_vector(3 downto 0);
-    signal decMin: std_logic_vector(3 downto 0); 
+    signal udsSecs: std_logic_vector(3 downto 0) := "0000";
+    signal decSecs: std_logic_vector(3 downto 0):= "0000";
+    signal udsMin: std_logic_vector(3 downto 0):= "0000";
+    signal decMin: std_logic_vector(3 downto 0):= "0000"; 
      
 --S0=reset||S1=play||S2=pause
     type STATES is (S0,S1,S2);
@@ -88,7 +88,6 @@ begin
 --Logica de estados
     process (currentState, clkSec)
     begin
-    udsSecs<="0000"; decSecs<="0000"; udsMin<="0000"; decMin<="0000";
         case currentState is
             when S0 => --Reset
                 udsSecs<="0000"; decSecs<="0000"; udsMin<="0000"; decMin<="0000";
@@ -120,6 +119,9 @@ begin
             when others => udsSecs<="0000"; decSecs<="0000"; udsMin<="0000"; decMin<="0000";          
         end case;
         digits_0to3<= decMin & udsMin & decSecs & udsSecs;
+        
+        --Propuesta REVISAR blink control
+        blink_ctrl <= (others => '1');
     end process;
 
 end Behavioral;
