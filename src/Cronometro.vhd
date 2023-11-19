@@ -4,6 +4,7 @@
 
 library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
+use IEEE.numeric_std.all;
 
 entity Cronometro is
   Port (clk:in std_logic;
@@ -59,7 +60,7 @@ begin
     end process;   
     
 --Cambio estado
-process (buttons, currentState)
+    process (buttons, currentState)
     begin
         nextState <= currentState;
         case currentState is
@@ -84,5 +85,41 @@ process (buttons, currentState)
         end case;
     end process;   
 
+--Logica de estados
+    process (currentState, clkSec)
+    begin
+    udsSecs<="0000"; decSecs<="0000"; udsMin<="0000"; decMin<="0000";
+        case currentState is
+            when S0 => --Reset
+                udsSecs<="0000"; decSecs<="0000"; udsMin<="0000"; decMin<="0000";
+            when S1 => --Play
+                if rising_edge (clkSec) then
+                    if udsSecs = "1001" then --Limite udsSecs = 9
+                        udsSecs <= "0000";
+                        if decSecs = "0101" then --Limite decsecs = 5
+                            decSecs <= "0000";
+                            if udsMin = "1001" then --Limite udsMin = 9
+                                udsMin <= "0000";
+                                if decMin = "0101" then --Limite decMin = 5
+                                    decMin <= "0000";
+                                else 
+                                    decMin <=std_logic_vector(to_unsigned(TO_INTEGER(unsigned(decMin)) + 1, decMin'length)); --Suma "10" min
+                                end if;
+                            else
+                                udsMin <= std_logic_vector(to_unsigned(TO_INTEGER(unsigned(udsMin)) + 1, udsMin'length)); --Suma 1 min
+                            end if;
+                        else
+                            decSecs <= std_logic_vector(to_unsigned(TO_INTEGER(unsigned(decSecs)) + 1, decSecs'length)); --Suma "10" secs
+                        end if;
+                    else
+                        udsSecs <= std_logic_vector(to_unsigned(TO_INTEGER(unsigned(udsSecs)) + 1, udsSecs'length)); --se hace un cast a unsigned int para sumar 1 y se vuelve a pasar a std_vector
+                    end if;   
+                end if;                       
+            when S2 => --Pause
+                null;
+            when others => udsSecs<="0000"; decSecs<="0000"; udsMin<="0000"; decMin<="0000";          
+        end case;
+        digits_0to3<= decMin & udsMin & decSecs & udsSecs;
+    end process;
 
 end Behavioral;
