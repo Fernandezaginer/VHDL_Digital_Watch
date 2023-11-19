@@ -25,7 +25,7 @@ entity display is
         digctrl_CTRL : out STD_LOGIC_VECTOR (7 downto 0)
     );
 end display;
-
+--
 architecture Behavioral of display is
     
     component Prescaler is
