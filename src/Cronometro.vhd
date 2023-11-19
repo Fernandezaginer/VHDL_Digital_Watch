@@ -50,11 +50,11 @@ begin
     );
     
 --Paso a sig estado
-    process (buttons, clkSec)
+    process (buttons, clk)
     begin
         if buttons = "0100" then
             currentState <= S0;
-        elsif clkSec'event and clkSec = '1' then
+        elsif clk'event and clk = '1' then
             currentState <= nextState;
         end if;
     end process;   
