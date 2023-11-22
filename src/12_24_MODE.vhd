@@ -21,7 +21,7 @@ entity display_12_24 is
     Port (
         clk : in std_logic;
         buttons: in std_logic_vector(3 downto 0);
-        stateActive: in std_logic_vector(8 downto 0);
+        stateActive: in std_logic_vector(5 downto 0);
         digits_0to3 : out std_logic_vector(15 downto 0);
         digits_4to7 : out std_logic_vector(15 downto 0);
         blink_ctrl : out std_logic_vector(7 downto 0);
@@ -35,7 +35,7 @@ architecture Behavioral of display_12_24 is
 begin
     process(clk)
 	begin
-	   if stateActive = "000000001" then
+	   if stateActive = "000001" then
            if (buttons = "0001") then
                out_mode_s <= '1';
            elsif (buttons = "1000") then
@@ -44,11 +44,11 @@ begin
        end if;   
 	end process;
     out_mode <= out_mode_s;
-	digits_0to3 <= "0010010011111100" when out_mode_s = '1'  AND stateActive = "000000001" 
-	   else "0001001011111100" when out_mode_s = '0'  AND stateActive = "000000001" ;
-	digits_4to7 <= "1111111111111111" when out_mode_s = '1' AND stateActive = "000000001" 
-	   else "1111111111111111" when out_mode_s = '0'  AND stateActive = "000000001" ;
-    blink_ctrl <= "11110000" when stateActive = "000000001";
+	digits_0to3 <= "0010010011111100" when out_mode_s = '1'  AND stateActive = "000001" 
+	   else "0001001011111100" when out_mode_s = '0'  AND stateActive = "000001" ;
+	digits_4to7 <= "1111111111111111" when out_mode_s = '1' AND stateActive = "000001" 
+	   else "1111111111111111" when out_mode_s = '0'  AND stateActive = "000001" ;
+    blink_ctrl <= "11110000" when stateActive = "000001";
 end Behavioral;
 
 
