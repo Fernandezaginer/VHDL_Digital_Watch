@@ -25,7 +25,7 @@ architecture Behavioral of fsm_global is
     component Cronometro is
     Port (  clk         :in std_logic;
             buttons     : in std_logic_vector(3 downto 0);
-            stateActive : in std_logic_vector(5 downto 0);
+            stateActive : in std_logic_vector(4 downto 0);
             digits_0to3 : out std_logic_vector(15 downto 0);
             digits_4to7 : out std_logic_vector(15 downto 0);
             blink_ctrl  : out std_logic_vector(7 downto 0)         
@@ -39,7 +39,7 @@ component display_12_24 is
     Port (
         clk : in std_logic;
         buttons: in std_logic_vector(3 downto 0);
-        stateActive: in std_logic_vector(5 downto 0);
+        stateActive: in std_logic_vector(4 downto 0);
         digits_0to3 : out std_logic_vector(15 downto 0);
         digits_4to7 : out std_logic_vector(15 downto 0);
         blink_ctrl : out std_logic_vector(7 downto 0);
@@ -50,7 +50,7 @@ end component;
 --DECLARACION DE SEÑALES
 ---------------------------------------------------------------------------------------------------------------------------
     --MAQUINA DE ESTADOS
-    --S0: Muestra hora; S1:Cambia hora; S2: set alarma; S4: Cronometro; S5: Formato hora 12/24h
+    --S0: Muestra hora; S1:Cambia hora; S2: set alarma; S3: Cronometro; S4: Formato hora 12/24h
     type STATES is (S0,S1,S2,S3,S4,S5);
     signal currentState: STATES := S1;
     signal nextState: STATES;
@@ -128,10 +128,6 @@ begin
                 end if; 
             when S4 =>
                 if modeButt='1' then
-                nextState <= S5;
-                end if;
-            when S5 =>
-                if modeButt='1' then
                 nextState <= S0;
                 end if; 
         end case;                
@@ -144,23 +140,21 @@ begin
             when S0 =>
                 stateAct <= ('1', others => '0');
             when S1 =>
-                stateAct <= "010000";
+                stateAct <= "01000";
             when S2 =>
-                stateAct <= "001000";               
+                stateAct <= "00100";    
+            --CRONOMETRO             
             when S3 =>
-                stateAct <= "000100" ;  
-            --CRONOMETRO     
-            when S4 =>
-                stateAct <= "000010" ;   
+                stateAct <= "00010" ;  
                 dig0to3General<=dig0to3Crono;
                 dig4to7General<=dig4to7Crono;
-                blinkGeneral<=blinkCrono;  
-            --FORMATO DE HORA
-            when S5 =>
-                stateAct <= "000001" ;
+                blinkGeneral<=blinkCrono;
+            --FORMATO DE HORA 
+            when S4 =>
+                stateAct <= "00001" ;   
                 dig0to3General<=dig0to3Formato;
                 dig4to7General<=dig4to7Formato;
-                blinkGeneral<=blinkFormato; 
+                blinkGeneral<=blinkFormato;              
         end case;
     end process; 
     

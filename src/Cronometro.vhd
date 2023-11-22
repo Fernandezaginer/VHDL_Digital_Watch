@@ -9,7 +9,7 @@ use IEEE.numeric_std.all;
 entity Cronometro is
   Port (clk:in std_logic;
         buttons: in std_logic_vector(3 downto 0);
-        stateActive: in std_logic_vector(5 downto 0);
+        stateActive: in std_logic_vector(4 downto 0);
         digits_0to3 : out std_logic_vector(15 downto 0);
         digits_4to7 : out std_logic_vector(15 downto 0);
         blink_ctrl : out std_logic_vector(7 downto 0)         
@@ -53,7 +53,7 @@ begin
 --Paso a sig estado
     process ( stateActive, buttons, clk)
     begin
-        if stateActive = "000010" then
+        if stateActive = "00010" then
             if buttons = "0100" then
                 currentState <= S0;
             elsif clk'event and clk = '1' then
@@ -65,7 +65,7 @@ begin
 --Cambio estado
     process ( stateActive, buttons, currentState)
     begin
-        if stateActive = "000010" then
+        if stateActive = "00010" then
             nextState <= currentState;
             case currentState is
                 when S0 =>
@@ -93,7 +93,7 @@ begin
 --Logica de estados
     process (stateActive, currentState, clkSec)
     begin
-        if stateActive = "000010" then
+        if stateActive = "00010" then
             case currentState is
                 when S0 => --Reset
                     udsSecs<="0000"; decSecs<="0000"; udsMin<="0000"; decMin<="0000";
