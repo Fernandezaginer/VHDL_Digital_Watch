@@ -37,18 +37,31 @@ architecture Behavioral of alarma is
 	signal on3 : std_logic;
 	signal freq_buzzer : std_logic;
 	signal buzzer_on :std_logic;
+	signal buzzer_beep_counter : integer;
+
+	constant BUZZER_BEEPS_COUNTS : integer := 1000000; 
 
 begin
 	
 	-- beep buttons
---	process(CLK)
---	begin
---		if buttons_beep(0) = '1' or buttons_beep(1) = '1' or buttons_beep(2) = '1' or buttons_beep(3) = '1' then
---			on3 <= '1';
---			wait for 100 ms;
---			on3 <= '0';
---		end if;
---	end process;
+	process(CLK)
+	begin
+		if rising_edge(CLK) then
+			if on3 = '1' and buzzer_beep_counter < BUZZER_BEEPS_COUNTS then
+				buzzer_beep_counter <= buzzer_beep_counter + 1;
+			end if;
+
+			if buzzer_beep_counter = BUZZER_BEEPS_COUNTS then
+				on3 <= '0';
+				buzzer_beep_counter <= 0;
+			end if;
+
+			if buttons_beep(0) = '1' or buttons_beep(1) = '1' or buttons_beep(2) = '1' or buttons_beep(3) = '1' then
+				on3 <= '1';
+				buzzer_beep_counter <= 0;
+			end if;
+		end if;
+	end process;
 
 
 	-- tone frequency
