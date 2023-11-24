@@ -18,6 +18,7 @@ entity alarma is
 		on2 : in std_logic;
 		buzzer : out std_logic;
 		buttons_beep : in std_logic_vector(3 downto 0);
+		ok_beep : in std_logic;
 		mode_beep : in std_logic
 	);	
 end entity alarma;
@@ -39,7 +40,7 @@ architecture Behavioral of alarma is
 	signal buzzer_on :std_logic;
 	signal buzzer_beep_counter : integer;
 
-	constant BUZZER_BEEPS_COUNTS : integer := 1000000; 
+	constant BUZZER_BEEPS_COUNTS : integer := 2000000; 
 
 begin
 	
@@ -56,7 +57,7 @@ begin
 				buzzer_beep_counter <= 0;
 			end if;
 
-			if buttons_beep(0) = '1' or buttons_beep(1) = '1' or buttons_beep(2) = '1' or buttons_beep(3) = '1' then
+			if buttons_beep(0) = '1' or buttons_beep(1) = '1' or buttons_beep(2) = '1' or buttons_beep(3) = '1' or ok_beep = '1' then
 				on3 <= '1';
 				buzzer_beep_counter <= 0;
 			end if;

@@ -112,6 +112,7 @@ architecture Structual of TOP is
 			on2 : in std_logic;
 			buzzer : out std_logic;
 			buttons_beep : in std_logic_vector(3 downto 0);
+			ok_beep : in std_logic;
 			mode_beep : in std_logic
 		);	
 	end component;
@@ -449,6 +450,7 @@ begin
 	        digits_0to3 => digits_0to3_5,
 	        digits_4to7 => digits_4to7_5,
 	        blink_ctrl => blink_ctrl_5,
+	        ok_beep => OK,
 	        CLK => CLK100MHZ,
 	        buttons => buttons,
 	        day_sel => selected_days_alm
