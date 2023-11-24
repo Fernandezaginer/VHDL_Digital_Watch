@@ -59,7 +59,7 @@ begin
             if contadorDecSec = 5 then
                 contadorDecSec <= 0;
                 SclkMin <= NOT SclkMin;
-                if contadorMin = 8 then
+                if contadorMin = 9 then
                     contadorMin <= 0;
                     SclkDMin <= NOT SclkDMin;
                 else
