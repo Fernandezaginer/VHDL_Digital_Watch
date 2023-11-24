@@ -50,9 +50,9 @@ end component;
 --DECLARACION DE SEÑALES
 ---------------------------------------------------------------------------------------------------------------------------
     --MAQUINA DE ESTADOS
-    --S0: Muestra hora; S1:Cambia hora; S2: set alarma; S3: Cronometro; S4: Formato hora 12/24h
+    --S0: Cambia hora; S1:Muestra hora; S2: set alarma; S3: Cronometro; S4: Formato hora 12/24h
     type STATES is (S0,S1,S2,S3,S4,S5);
-    signal currentState: STATES := S1;
+    signal currentState: STATES := S0; --El primer estado es ajustar la hora
     signal nextState: STATES;
     
     --Señales generales que se asignaran a la salida
@@ -60,8 +60,10 @@ end component;
     signal dig4to7General : std_logic_vector(15 downto 0);
     signal blinkGeneral : std_logic_vector(7 downto 0);
     
-    signal stateAct : std_logic_vector (5 downto 0); --Vector de señales de activación componentes
+    --Vector de señales de activación componentes
+    signal stateAct : std_logic_vector (5 downto 0); 
     
+--------SEÑALES DE SALIDA DE CADA COMPONENTE/ESTADO--------
     --Señales salida cronometro
     signal dig0to3Crono : std_logic_vector(15 downto 0);
     signal dig4to7Crono : std_logic_vector(15 downto 0);
@@ -97,6 +99,7 @@ begin
 	        blink_ctrl => blinkFormato,
 	        out_mode => outFormat12_24
 	    );
+	    
 --Paso a siguiente estado
     process (clk)
     begin
