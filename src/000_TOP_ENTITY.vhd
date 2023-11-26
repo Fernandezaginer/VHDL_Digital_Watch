@@ -37,6 +37,41 @@ architecture Structual of TOP is
 	--                          FUNCIONALIDADES
 	----------------------------------------------------------------------------
 
+
+	component date_selector is
+	generic(
+		MODE_NUM : std_logic_vector(3 downto 0) := "1111"
+	);
+	port(
+		clk : in std_logic;
+		buttons : in std_logic_vector(3 downto 0);
+		mode : in std_logic_vector(3 downto 0);
+		day_up : in std_logic;
+		digits_0to3 : out std_logic_vector(15 downto 0);
+		digits_4to7 : out std_logic_vector(15 downto 0);
+		blink_ctrl : out std_logic_vector(7 downto 0);
+		year_up : out std_logic
+	);
+	end component;
+
+
+	component year_selector is
+		generic(
+			MODE_NUM : std_logic_vector(3 downto 0) := "1111"
+		);
+		port(
+			clk : in std_logic;
+			buttons : in std_logic_vector(3 downto 0);
+			mode : in std_logic_vector(3 downto 0);
+			year_up : in std_logic;
+			digits_0to3 : out std_logic_vector(15 downto 0);
+			digits_4to7 : out std_logic_vector(15 downto 0);
+			blink_ctrl : out std_logic_vector(7 downto 0);
+			year_out : out integer                            -- No en BCD
+		);
+	end component;
+
+
 	component display_12_24 is
 	    generic(
 	        MODE_NUM : std_logic_vector(3 downto 0) := "1111"
@@ -74,7 +109,7 @@ architecture Structual of TOP is
 	--                           I/O
 	----------------------------------------------------------------------------
 
-	component display is
+	component gestor_de_salidas is
 	    generic(
 	        MODE_DISP_CATODO : std_logic_vector(3 downto 0) := "1111"
 	        );
@@ -84,12 +119,19 @@ architecture Structual of TOP is
 	        digits_4to7 : in std_logic_vector(15 downto 0);
 	        blink_ctrl : in std_logic_vector(7 downto 0);
 	        CLK  : in std_logic;
+			on1 : in std_logic;
+			on2 : in std_logic;
+			ok_beep : in std_logic;
+			buttons_beep : in std_logic_vector(3 downto 0);
 	        SEGMENT_CRTL : out STD_LOGIC_VECTOR (6 downto 0);
-	        digctrl_CTRL : out STD_LOGIC_VECTOR (7 downto 0)
-	    );
+	        digctrl_CTRL : out STD_LOGIC_VECTOR (7 downto 0);
+			buzzer : out std_logic
+		);
 	end component;
 
-	component button_interface is
+
+
+	component gestor_de_entradas is
 		Port(
 	        CLK : in std_logic;
 			UP_SW : in std_logic;
@@ -103,18 +145,6 @@ architecture Structual of TOP is
 			DOWN : out std_logic;
 			OK : out std_logic
 		);
-	end component;
-
-	component alarma is
-		port(
-			clk : in std_logic;
-			on1 : in std_logic;
-			on2 : in std_logic;
-			buzzer : out std_logic;
-			buttons_beep : in std_logic_vector(3 downto 0);
-			ok_beep : in std_logic;
-			mode_beep : in std_logic
-		);	
 	end component;
 
 
@@ -177,15 +207,6 @@ architecture Structual of TOP is
 
 
 
-
-
-
-
-
-
-
-
-
 	----------------------------------------------------------------------------
 	--                     SEÑALES GENERALES
 	----------------------------------------------------------------------------
@@ -211,6 +232,11 @@ architecture Structual of TOP is
     signal alarma_2_on : std_logic;
 
     signal selected_days_alm : std_logic_vector(6 downto 0);
+
+    signal year_up : std_logic;
+    signal day_up : std_logic;
+
+    signal year : integer;
 
     signal digits_0to3_0 : std_logic_vector(15 downto 0) := "1111111111111111";
     signal digits_4to7_0 : std_logic_vector(15 downto 0) := "1111111111111111";
@@ -278,21 +304,33 @@ begin
 	--                  COMPONENTES GENERALES
 	----------------------------------------------------------------------------
 
-	displays_7seg: display
-	    generic map (
+
+
+
+
+	gestor_de_salidas_a : gestor_de_salidas
+	    generic map(
 	        MODE_DISP_CATODO => MODE_DAY_SELECT
 	        )
-	    port map (
-	    	mode => mode,
+	    port map(
+	        mode => mode,
 	        digits_0to3 => digits_0to3,
 	        digits_4to7 => digits_4to7,
 	        blink_ctrl => blink_ctrl,
 	        CLK => CLK100MHZ,
+			on1 => alarma_1_on,
+			on2 => alarma_2_on,
+			buttons_beep => buttons,
+			ok_beep => OK,
 	        SEGMENT_CRTL => SEGMENT,
-	        digctrl_CTRL => digctrl
-	    );
+	        digctrl_CTRL => digctrl,
+			buzzer => BUZZER
+		);
 
-	buttons_c : button_interface
+
+
+
+	buttons_c : gestor_de_entradas
 		Port map(
 	        CLK => CLK100MHZ,
 			UP_SW => BTNU,
@@ -317,15 +355,9 @@ begin
 	        counter_out => mode
 	    );
 
-	alarma_sonora : alarma
-		port map (
-			clk => CLK100MHZ,
-			on1 => alarma_1_on,
-			on2 => alarma_2_on,
-			buzzer => BUZZER,
-			buttons_beep => buttons,
-			mode_beep => OK
-		);	
+
+
+
 
 
 	mux16_0 : mux16_nc
@@ -424,16 +456,39 @@ begin
 	digits_4to7_1 <= "1111111111111111";
 	blink_ctrl_1 <= "11000000";
 	
-	-- 2. Modo configuración de fecha	
-	digits_0to3_2 <= "1111111111111111";
-	digits_4to7_2 <= "0001001100010001";
-	blink_ctrl_2 <= "00001100";
-	
+	-- 2. Modo configuración de fecha
+
+	selector_de_fecha : date_selector
+	generic map(
+		MODE_NUM => "0010"
+	)
+	port map(
+		clk => CLK100MHZ,
+		buttons => buttons,
+		mode => mode,
+		day_up => day_up,
+		digits_0to3 => digits_0to3_2,
+		digits_4to7 => digits_4to7_2,
+		blink_ctrl => blink_ctrl_2,
+		year_up => year_up
+	);
+
 
 	-- 3. Modo configuración de año
-	digits_0to3_3 <= "0010000000100011";
-	digits_4to7_3 <= "1111111111111111";
-	blink_ctrl_3 <= "11110000";
+	selector_de_anio : year_selector
+		generic map(
+			MODE_NUM => "0011"
+		)
+		port map(
+			clk => CLK100MHZ,
+			buttons => buttons,
+			mode => mode,
+			year_up => year_up,
+			digits_0to3 => digits_0to3_3,
+			digits_4to7 => digits_4to7_3,
+			blink_ctrl => blink_ctrl_3,
+			year_out => year            -- No en BCD
+		);
 	
 	
 	-- 4. Configuracion de la alarma
@@ -450,7 +505,6 @@ begin
 	        digits_0to3 => digits_0to3_5,
 	        digits_4to7 => digits_4to7_5,
 	        blink_ctrl => blink_ctrl_5,
-	        ok_beep => OK,
 	        CLK => CLK100MHZ,
 	        buttons => buttons,
 	        day_sel => selected_days_alm

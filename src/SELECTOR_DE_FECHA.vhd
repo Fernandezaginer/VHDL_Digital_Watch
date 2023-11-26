@@ -7,23 +7,24 @@ LIBRARY ieee;
 USE ieee.std_logic_1164.ALL;
 USE ieee.std_logic_arith.ALL;
 USE ieee.std_logic_unsigned.ALL;
+use IEEE.NUMERIC_STD.ALL;
 library UNISIM;
 use UNISIM.VComponents.all;
 
 
 entity date_selector is
 	generic(
-		MODE_NUM => "1000"
+		MODE_NUM  : std_logic_vector(3 downto 0) := "1111"
 	);
 	port(
 		clk : in std_logic;
-		buttons : in std_logic(3 downto 0);
+		buttons : in std_logic_vector(3 downto 0);
 		mode : in std_logic_vector(3 downto 0);
 		day_up : in std_logic;
-		digits_0to3 : out std_logic_vector(3 downto 0);
-		digits_4to7 : out std_logic_vector(3 downto 0);
+		digits_0to3 : out std_logic_vector(15 downto 0);
+		digits_4to7 : out std_logic_vector(15 downto 0);
 		blink_ctrl : out std_logic_vector(7 downto 0);
-		year_up : in std_logic
+		year_up : out std_logic
 	);
 end entity;
 
@@ -39,17 +40,18 @@ architecture Structual of date_selector is
 	end component;
 
 	type MonthDayMax is array(0 to 11) of integer;
-	signal dia_maximo_segun_mes: IntegerVector := (31,30,31,30,31,31,30,31,30,31,28,31,0);
-	signal day: integer = 1;
-	signal month: integer = 1;
-	signal day_msb: integer = 0;
-	signal day_lsb: integer = 1;
-	signal month_msb: integer = 0;
-	signal month_lsb: integer = 1;
+	signal dia_maximo_segun_mes: MonthDayMax := (31,30,31,30,31,31,30,31,30,31,28,31);
+	signal selected_day : integer := 0;
+	signal day: integer := 1;
+	signal month: integer := 1;
+	signal day_msb: integer := 0;
+	signal day_lsb: integer := 1;
+	signal month_msb: integer := 0;
+	signal month_lsb: integer := 1;
 	signal day_up_edge : std_logic;
-	signal year_flag : std_logic = '0';
+	signal year_flag : std_logic := '0';
 
-	signal digit_sel : std_logic(1 downto 0) = "10";
+	signal digit_sel : std_logic_vector(1 downto 0) := "10";
 begin
 
 
@@ -61,7 +63,7 @@ begin
 	    );
 
 
-	process(clk):
+	process(clk)
 	begin
 		if rising_edge(clk) then
 
@@ -72,11 +74,11 @@ begin
 			
 			if day_up_edge = '1' then
 				day <= day + 1;
-				if day >= dia_maximo_segun_mes(month);
+				if day >= dia_maximo_segun_mes(month) then
 					day <= 1;
 					month <= month + 1;
 					if month >= 13 then
-						month = 1;
+						month <= 1;
 						year_up <= '1';
 						year_flag <= '1';
 					end if;
@@ -84,15 +86,27 @@ begin
 				
 	    	elsif mode = MODE_NUM then
 		        if buttons = "0001" then         -- up
-		        	day <= day + 1 when (digit_sel <= "01" and day < 31) else day;
-		        	month <= month + 1 when (digit_sel <= "10" and month < 12) else month;
+		            if (digit_sel = "01" and day < 31) then
+		              day <= day + 1;
+		            end if;
+                    if (digit_sel = "10" and month < 12) then
+                        month <= month +1;
+                    end if;
+		        	--day <= day + 1 when (digit_sel = "01" and day < 31) else day;
+		        	--month <= month + 1 when (digit_sel = "10" and month < 12) else month;
 		        elsif buttons = "0010" then      -- left
 					digit_sel <= "10";
 		        elsif buttons = "0100" then      -- right
 					digit_sel <= "01";
 		        elsif buttons = "1000" then      -- down
-		        	day <= day - 1 when (digit_sel <= "01" and day > 1) else day;
-		        	month <= month - 1 when (digit_sel <= "10" and month > 1) else month;
+		            if (digit_sel = "01" and day > 1) then
+		              day <= day - 1;
+		            end if;
+                    if (digit_sel = "10" and month > 1) then
+                        month <= month - 1;
+                    end if;
+		        	--day <= day - 1 when (digit_sel = "01" and day > 1) else day;
+		        	--month <= month - 1 when (digit_sel = "10" and month > 1) else month;
 		        end if;
 		        if selected_day < 0 then
 		            selected_day <= 0;
@@ -102,19 +116,20 @@ begin
 		        end if;
 	        end if;
 
-	       	if month >= 10 then
-	       		month_msb = 1;
-	       		month_lsb = month - 10;
+	       	if month > 9 then
+	       		month_msb <= 1;
+	       		month_lsb <= month - 10;
 	       	else 
-	       		month_msb = 0;
-	       		month_lsb = month;
+	       		month_msb <= 0;
+	       		month_lsb <= month;
 	       	end if;
+	       	
 	       	if day >= 10 then
-	       		month_msb = day mod 10;
-	       		month_lsb = month - ((day mod 10)*10);
+	       		month_msb <= day mod 10;
+	       		month_lsb <= month - ((day mod 10)*10);
 	       	else 
-	       		day_msb = 0;
-	       		day_lsb = day;
+	       		day_msb <= 0;
+	       		day_lsb <= day;
 	       	end if;
 
 		end if;
@@ -124,8 +139,8 @@ begin
 
 	digits_4to7(15 downto 12) <= std_logic_vector(to_unsigned(month_msb,4));
 	digits_4to7(11 downto 8) <= std_logic_vector(to_unsigned(month_lsb,4));
-	digits_4to7(7 downto 4) <=  std_logic_vector(to_unsigned(day_msb,4));
-	digits_4to7(3 downto 0) <=  std_logic_vector(to_unsigned(day_lsb,4));
+	digits_4to7(7 downto 4) <= std_logic_vector(to_unsigned(day_msb,4));
+	digits_4to7(3 downto 0) <= std_logic_vector(to_unsigned(day_lsb,4));
 
 	blink_ctrl(7 downto 4) <= "0000";
 	blink_ctrl(3 downto 2) <= "11" when mode = MODE_NUM and digit_sel = "10" else "00";

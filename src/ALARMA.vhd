@@ -18,8 +18,7 @@ entity alarma is
 		on2 : in std_logic;
 		buzzer : out std_logic;
 		buttons_beep : in std_logic_vector(3 downto 0);
-		ok_beep : in std_logic;
-		mode_beep : in std_logic
+		ok_beep : in std_logic
 	);	
 end entity alarma;
 

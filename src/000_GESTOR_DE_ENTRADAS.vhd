@@ -1,6 +1,6 @@
 -- Trabajo SED 23/24 Grupo 2
--- Modulo botones
--- Contienen los sincronizadores y detecores de flanco
+-- Modulo gestor de entradas botones
+-- Contiene los sincronizadores y detecores de flanco
 
 
 LIBRARY ieee;
@@ -10,7 +10,7 @@ USE ieee.std_logic_unsigned.ALL;
 library UNISIM;
 use UNISIM.VComponents.all;
 
-entity button_interface is
+entity gestor_de_entradas is
 	Port(
         CLK  : in std_logic;
 		UP_SW : in std_logic;
@@ -25,10 +25,10 @@ entity button_interface is
 		OK : out std_logic
 	);
 
-end button_interface;
+end gestor_de_entradas;
 
 
-architecture Structual of button_interface is 
+architecture Structual of gestor_de_entradas is 
 	component SYNCHRNZR is
 	    port (
 	        CLK : in std_logic;
