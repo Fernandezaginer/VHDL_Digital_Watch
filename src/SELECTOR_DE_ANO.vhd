@@ -8,8 +8,12 @@ USE ieee.std_logic_1164.ALL;
 USE ieee.std_logic_arith.ALL;
 USE ieee.std_logic_unsigned.ALL;
 use IEEE.NUMERIC_STD.ALL;
+use IEEE.MATH_REAL.ALL;
+--use IEEE.fixed_float_types.all;
+
 library UNISIM;
 use UNISIM.VComponents.all;
+
 
 
 entity year_selector is
@@ -45,6 +49,11 @@ architecture Structual of year_selector is
 	signal year_2 : integer := 0;
 	signal year_1 : integer := 2;
 	signal year_0 : integer := 3;
+	
+	signal c3 : real := 1000.0;
+	signal c2 : real := 100.0;
+	signal c1 : real := 10.0;
+	signal c0 : real := 1.0;
 
 begin
 
@@ -72,10 +81,11 @@ begin
 		        end if;
 	        end if;
 		
-			year_3 <= year / 1000;
-			year_2 <= (year - year_3*1000) / 100;
-			year_1 <= (year - year_2*100) / 10;
-			year_0 <= (year - year_1*10) / 1;
+            year_3 <= (year / 1000) mod 10;
+            year_2 <= (year / 100) mod 10;
+            year_1 <= (year / 10) mod 10;
+            year_0 <= year mod 10;
+            
 		end if;		
 	end process;
 

@@ -125,8 +125,8 @@ begin
 	       	end if;
 	       	
 	       	if day >= 10 then
-	       		month_msb <= day mod 10;
-	       		month_lsb <= month - ((day mod 10)*10);
+	       		day_msb <= (day / 10) mod 10;
+	       		day_lsb <= day - (((day / 10) mod 10)*10);
 	       	else 
 	       		day_msb <= 0;
 	       		day_lsb <= day;
