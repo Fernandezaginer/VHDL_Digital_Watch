@@ -32,7 +32,7 @@ architecture BEHAVIORAL of EDGEDTCTR_V2 is
                 out_s <= '0';
             elsif SYNC_IN = '0' then
                 clk_count <= clk_count + 1;
-                if clk_count > 2000;
+                if clk_count > 2000 then
                     clk_count <= 2000;
                 end if;
             elsif clk_count >= 2000 then
