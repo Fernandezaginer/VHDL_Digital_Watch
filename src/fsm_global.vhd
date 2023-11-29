@@ -22,7 +22,16 @@ architecture Behavioral of fsm_global is
 ---------------------------------------------------------------------------------------------------------------------------
 --DECLARACION DE COMPONENTES
 ---------------------------------------------------------------------------------------------------------------------------
-    component Cronometro is
+component RelojMostrarHora is
+    Port (  formatMode  : in STD_LOGIC;
+            clk         :in std_logic;
+            digits_0to3 : out std_logic_vector(15 downto 0);
+            digits_4to7 : out std_logic_vector(15 downto 0);
+            blink_ctrl  : out std_logic_vector(7 downto 0)  
+    );
+end component;
+
+component Cronometro is
     Port (  clk         :in std_logic;
             buttons     : in std_logic_vector(3 downto 0);
             stateActive : in std_logic_vector(4 downto 0);
@@ -38,12 +47,12 @@ component display_12_24 is
         );
     Port (
         clk : in std_logic;
-        buttons: in std_logic_vector(3 downto 0);
-        stateActive: in std_logic_vector(4 downto 0);
+        buttons     : in std_logic_vector(3 downto 0);
+        stateActive : in std_logic_vector(4 downto 0);
         digits_0to3 : out std_logic_vector(15 downto 0);
         digits_4to7 : out std_logic_vector(15 downto 0);
-        blink_ctrl : out std_logic_vector(7 downto 0);
-        out_mode : out std_logic
+        blink_ctrl  : out std_logic_vector(7 downto 0);
+        out_mode    : out std_logic
     );
 end component;
 ---------------------------------------------------------------------------------------------------------------------------
@@ -55,35 +64,54 @@ end component;
     signal currentState: STATES := S0; --El primer estado es ajustar la hora
     signal nextState: STATES;
     
-    --Señales generales que se asignaran a la salida
-    signal dig0to3General : std_logic_vector(15 downto 0);
-    signal dig4to7General : std_logic_vector(15 downto 0);
-    signal blinkGeneral : std_logic_vector(7 downto 0);
+------SEÑALES GENERALES QUE SE ASIGNARAN A LA SALIDA----------------
+    signal dig0to3General   : std_logic_vector(15 downto 0);
+    signal dig4to7General   : std_logic_vector(15 downto 0);
+    signal blinkGeneral     : std_logic_vector(7 downto 0);
     
     --Vector de señales de activación componentes
     signal stateAct : std_logic_vector (5 downto 0); 
     
 --------SEÑALES DE SALIDA DE CADA COMPONENTE/ESTADO--------
+    --Señales salida reloj mostrar hora
+    signal dig0to3Reloj : std_logic_vector(15 downto 0);
+    signal dig4to7Reloj : std_logic_vector(15 downto 0);
+    signal blinkReloj   : std_logic_vector(7 downto 0);
+    
     --Señales salida cronometro
     signal dig0to3Crono : std_logic_vector(15 downto 0);
     signal dig4to7Crono : std_logic_vector(15 downto 0);
-    signal blinkCrono : std_logic_vector(7 downto 0);
+    signal blinkCrono   : std_logic_vector(7 downto 0);
+    
     --Señales salida formato 12/24h
-    signal dig0to3Formato : std_logic_vector(15 downto 0);
-    signal dig4to7Formato : std_logic_vector(15 downto 0);
-    signal blinkFormato : std_logic_vector(7 downto 0);
-    signal outFormat12_24 : std_logic := '0'; --señal formato de hora 12/24h
+    signal dig0to3Formato   : std_logic_vector(15 downto 0);
+    signal dig4to7Formato   : std_logic_vector(15 downto 0);
+    signal blinkFormato     : std_logic_vector(7 downto 0);
+    signal outFormat12_24   : std_logic := '0'; --señal formato de hora 12/24h
     
 begin
+---------------------------------------------------------------------------------------------------------------------------
+--INSTANCIACION DE COMPONENTES
+---------------------------------------------------------------------------------------------------------------------------
+------------------INSTANCIACION RELOJ--------------------------
+    instReloj : RelojMostrarHora
+        Port map(
+            formatMode     =>outFormat12_24,    --Recibe el formato 12/24 de el componente correspondiente
+            clk            => clk, 
+	        digits_0to3    => dig0to3Reloj,
+	        digits_4to7    => dig4to7Reloj,
+	        blink_ctrl     => blinkReloj
+	    );
+
 ------------------INSTANCIACION CRONO--------------------------
     intsCronometro : Cronometro
 		Port map(
-	        clk => clk, 
-	        buttons => buttons,
-	        stateActive => stateAct,
-	        digits_0to3 => dig0to3Crono,
-	        digits_4to7 => dig4to7Crono,
-	        blink_ctrl => blinkCrono
+	        clk            => clk, 
+	        buttons        => buttons,
+	        stateActive    => stateAct,
+	        digits_0to3    => dig0to3Crono,
+	        digits_4to7    => dig4to7Crono,
+	        blink_ctrl     => blinkCrono
 		);
 ------------------INSTANCIACION FORMATO HORA--------------------------		
     instFormat12_24 : display_12_24
@@ -91,15 +119,18 @@ begin
 			MODE_NUM => "1000"
 			)
 	    Port map (
-            clk => clk,
-	        buttons => buttons,
-	        stateActive => stateAct,
-	        digits_0to3 => dig0to3Formato,
-	        digits_4to7 => dig4to7Formato,
-	        blink_ctrl => blinkFormato,
-	        out_mode => outFormat12_24
+            clk             => clk,
+	        buttons         => buttons,
+	        stateActive     => stateAct,
+	        digits_0to3     => dig0to3Formato,
+	        digits_4to7     => dig4to7Formato,
+	        blink_ctrl      => blinkFormato,
+	        out_mode        => outFormat12_24
 	    );
-	    
+
+---------------------------------------------------------------------------------------------------------------------------
+--MAQUINA DE ESTADOS
+---------------------------------------------------------------------------------------------------------------------------    
 --Paso a siguiente estado
     process (clk)
     begin
@@ -144,6 +175,9 @@ begin
                 stateAct <= ('1', others => '0');
             when S1 =>
                 stateAct <= "01000";
+                dig0to3General<=dig0to3Reloj;
+                dig4to7General<=dig4to7Reloj;
+                blinkGeneral<=blinkReloj;
             when S2 =>
                 stateAct <= "00100";    
             --CRONOMETRO             

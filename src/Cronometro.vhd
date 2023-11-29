@@ -123,12 +123,11 @@ begin
                 when S2 => --Pause
                     null;
                 when others => udsSecs<="0000"; decSecs<="0000"; udsMin<="0000"; decMin<="0000";          
-            end case;
-            digits_0to3<= decMin & udsMin & decSecs & udsSecs;
-            
-            --Propuesta REVISAR blink control
-            blink_ctrl <= (others => '1');
+            end case;            
         end if;
     end process;
+    digits_0to3<= decMin & udsMin & decSecs & udsSecs;
+    --Propuesta REVISAR blink control
+    blink_ctrl <= (others => '1');
 
 end Behavioral;
