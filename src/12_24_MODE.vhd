@@ -43,6 +43,7 @@ begin
            end if;	
        end if;   
 	end process;
+	--0 = 12h; 1 = 24H;
     out_mode <= out_mode_s;
 	digits_0to3 <= "0010010011111100" when out_mode_s = '1'  AND stateActive = "00001" 
 	   else "0001001011111100" when out_mode_s = '0'  AND stateActive = "00001" ;

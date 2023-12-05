@@ -25,6 +25,8 @@ architecture Behavioral of fsm_global is
 component RelojMostrarHora is
     Port (  formatMode  : in STD_LOGIC;
             clk         :in std_logic;
+            inicialMins  : in std_logic_vector(15 downto 0); --Inicial primer display
+            inicialHora : in std_logic_vector(15 downto 0);  --inicial segundo display
             digits_0to3 : out std_logic_vector(15 downto 0);
             digits_4to7 : out std_logic_vector(15 downto 0);
             blink_ctrl  : out std_logic_vector(7 downto 0)  
@@ -73,6 +75,10 @@ end component;
     signal stateAct : std_logic_vector (5 downto 0); 
     
 --------SEÑALES DE SALIDA DE CADA COMPONENTE/ESTADO--------
+    --Señales cambiar hora DE MOMENTO NO ESTA HECHO
+    signal dig0to3CambHora : std_logic_vector(15 downto 0);
+    signal dig4to7CambHora : std_logic_vector(15 downto 0);
+
     --Señales salida reloj mostrar hora
     signal dig0to3Reloj : std_logic_vector(15 downto 0);
     signal dig4to7Reloj : std_logic_vector(15 downto 0);
@@ -98,6 +104,8 @@ begin
         Port map(
             formatMode     =>outFormat12_24,    --Recibe el formato 12/24 de el componente correspondiente
             clk            => clk, 
+            inicialMins    => dig0to3CambHora,
+            inicialHora    => dig4to7CambHora,
 	        digits_0to3    => dig0to3Reloj,
 	        digits_4to7    => dig4to7Reloj,
 	        blink_ctrl     => blinkReloj
@@ -173,6 +181,9 @@ begin
         case currentState is
             when S0 =>
                 stateAct <= ('1', others => '0');
+                --AUXILIAR DE MOMENTO PARA DARLE VALOR INICIAL 5HRS 58MIN 0 SECS
+                dig0to3CambHora <= "0101100000000000";
+                dig4to7CambHora <= "1111111100000101";
             when S1 =>
                 stateAct <= "01000";
                 dig0to3General<=dig0to3Reloj;
