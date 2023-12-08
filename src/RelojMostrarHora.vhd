@@ -67,16 +67,16 @@ begin
             if udsSecs = "1001" then
                 udsSecs <= "0000";
             else
-             udsSecs <= std_logic_vector(to_unsigned(TO_INTEGER(unsigned(udsSecs)) + 1, udsSecs'length));
+                udsSecs <= std_logic_vector(to_unsigned(TO_INTEGER(unsigned(udsSecs)) + 1, udsSecs'length));
             end if;
         end if;
         
         --SUMA DECENAS DE SEGUNDOS
         if rising_edge (clkDSec_s) then
             if decSecs = "0101" then
-                udsSecs <= "0000";
+                decSecs <= "0000";
             else
-             decSecs <= std_logic_vector(to_unsigned(TO_INTEGER(unsigned(decSecs)) + 1, decSecs'length));
+                decSecs <= std_logic_vector(to_unsigned(TO_INTEGER(unsigned(decSecs)) + 1, decSecs'length));
             end if;
         end if;
         
@@ -85,16 +85,16 @@ begin
             if udsMin = "1001" then
                 udsMin <= "0000";
             else
-             udsMin <= std_logic_vector(to_unsigned(TO_INTEGER(unsigned(udsMin)) + 1, udsMin'length));
+                udsMin <= std_logic_vector(to_unsigned(TO_INTEGER(unsigned(udsMin)) + 1, udsMin'length));
             end if;
         end if;
         
         --SUMA DECENAS DE MINUTOS
         if rising_edge (clkDMin_s) then
             if decMin = "0101" then
-                udsMin <= "0000";
+                decMin <= "0000";
             else
-             decMin <= std_logic_vector(to_unsigned(TO_INTEGER(unsigned(decMin)) + 1, decMin'length));
+                decMin <= std_logic_vector(to_unsigned(TO_INTEGER(unsigned(decMin)) + 1, decMin'length));
             end if;
         end if;
         
