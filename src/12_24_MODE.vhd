@@ -35,7 +35,7 @@ architecture Behavioral of display_12_24 is
 begin
     process(clk)
 	begin
-	   if stateActive = "00001" then
+	   if stateActive = "000010" then
            if (buttons = "0001") then
                out_mode_s <= '1';
            elsif (buttons = "1000") then
@@ -45,11 +45,11 @@ begin
 	end process;
 	--0 = 12h; 1 = 24H;
     out_mode <= out_mode_s;
-	digits_0to3 <= "0010010011111100" when out_mode_s = '1'  AND stateActive = "00001" 
-	   else "0001001011111100" when out_mode_s = '0'  AND stateActive = "00001" ;
-	digits_4to7 <= "1111111111111111" when out_mode_s = '1' AND stateActive = "00001" 
-	   else "1111111111111111" when out_mode_s = '0'  AND stateActive = "00001" ;
-    blink_ctrl <= "11110000" when stateActive = "00001";
+	digits_0to3 <= "0010010011111100" when out_mode_s = '1'  AND stateActive = "000010" 
+	   else "0001001011111100" when out_mode_s = '0'  AND stateActive = "000010" ;
+	digits_4to7 <= "1111111111111111" when out_mode_s = '1' AND stateActive = "000010" 
+	   else "1111111111111111" when out_mode_s = '0'  AND stateActive = "000010" ;
+    blink_ctrl <= "11110000" when stateActive = "000010";
 end Behavioral;
 
 

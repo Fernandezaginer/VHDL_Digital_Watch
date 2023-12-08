@@ -21,14 +21,31 @@ architecture Behavioral of fsm_global is
 ---------------------------------------------------------------------------------------------------------------------------
 --DECLARACION DE COMPONENTES
 ---------------------------------------------------------------------------------------------------------------------------
+
+component AjusteHora is
+    generic (
+    codeState : std_logic_vector (5 downto 0) := "100000"   --Estado de funcionamiento (ajuste o alarma)
+    );
+    Port ( buttons      : in STD_LOGIC_VECTOR (3 downto 0);
+           format12_24  : in STD_LOGIC;
+           clk          : in STD_LOGIC;
+           stateActive  : in STD_LOGIC_VECTOR (5 downto 0);
+           digits0to3   : out STD_LOGIC_VECTOR (15 downto 0);
+           digits4to7   : out STD_LOGIC_VECTOR (15 downto 0);
+           blinkControl : out STD_LOGIC_VECTOR (7 downto 0));
+end component;
+
 component RelojMostrarHora is
-    Port (  formatMode  : in STD_LOGIC;
-            clk         :in std_logic;
+    Port (  alarmaMins   : in std_logic_vector(15 downto 0);
+            alarmaHora   : in std_logic_vector(15 downto 0);
+            formatMode   : in STD_LOGIC;
+            clk          : in std_logic;
             inicialMins  : in std_logic_vector(15 downto 0); --Inicial primer display
-            inicialHora : in std_logic_vector(15 downto 0);  --inicial segundo display
-            digits_0to3 : out std_logic_vector(15 downto 0);
-            digits_4to7 : out std_logic_vector(15 downto 0);
-            blink_ctrl  : out std_logic_vector(7 downto 0)  
+            inicialHora  : in std_logic_vector(15 downto 0);  --inicial segundo display
+            digits_0to3  : out std_logic_vector(15 downto 0);
+            digits_4to7  : out std_logic_vector(15 downto 0);
+            blink_ctrl   : out std_logic_vector(7 downto 0);
+            alarmaOn     : out std_logic  
     );
 end component;
 
@@ -74,14 +91,20 @@ end component;
     signal stateAct : std_logic_vector (5 downto 0); 
     
 --------SEÑALES DE SALIDA DE CADA COMPONENTE/ESTADO--------
-    --Señales cambiar hora DE MOMENTO NO ESTA HECHO
+    --Señales salida cambiar hora
     signal dig0to3CambHora : std_logic_vector(15 downto 0);
     signal dig4to7CambHora : std_logic_vector(15 downto 0);
+    signal blinkCambHora   : std_logic_vector(7 downto 0);
 
     --Señales salida reloj mostrar hora
     signal dig0to3Reloj : std_logic_vector(15 downto 0);
     signal dig4to7Reloj : std_logic_vector(15 downto 0);
     signal blinkReloj   : std_logic_vector(7 downto 0);
+    
+    --Señales salida alarma
+    signal dig0to3Alarma : std_logic_vector(15 downto 0);
+    signal dig4to7Alarma : std_logic_vector(15 downto 0);
+    signal blinkAlarma   : std_logic_vector(7 downto 0);
     
     --Señales salida cronometro
     signal dig0to3Crono : std_logic_vector(15 downto 0);
@@ -98,18 +121,51 @@ begin
 ---------------------------------------------------------------------------------------------------------------------------
 --INSTANCIACION DE COMPONENTES
 ---------------------------------------------------------------------------------------------------------------------------
+------------------INSTANCIACION CAMBIO DE HORA--------------------------
+    instCambHora : AjusteHora 
+        generic map(
+            codeState => "100000"   --Estado de funcionamiento (ajuste o alarma)
+        )
+        Port map( 
+           buttons      =>  buttons,
+           format12_24  =>  outFormat12_24,
+           clk          =>  clk,
+           stateActive  =>  stateAct,
+           digits0to3   =>  dig0to3CambHora,
+           digits4to7   =>  dig4to7CambHora,
+           blinkControl =>  blinkCambHora 
+        );
+
 ------------------INSTANCIACION RELOJ--------------------------
     instReloj : RelojMostrarHora
         Port map(
-            formatMode     =>outFormat12_24,    --Recibe el formato 12/24 de el componente correspondiente
+            alarmaMins     => dig0to3Alarma,
+            alarmaHora     => dig0to3Alarma,
+            formatMode     => outFormat12_24,    --Recibe el formato 12/24 de el componente correspondiente
             clk            => clk, 
             inicialMins    => dig0to3CambHora,
             inicialHora    => dig4to7CambHora,
 	        digits_0to3    => dig0to3Reloj,
 	        digits_4to7    => dig4to7Reloj,
-	        blink_ctrl     => blinkReloj
+	        blink_ctrl     => blinkReloj,
+	        alarmaOn       => buzzer
 	    );
 
+------------------INSTANCIACION ALARMA--------------------------
+    instAlarma : AjusteHora 
+        generic map(
+            codeState => "001000"   --Estado de funcionamiento (ajuste o alarma)
+        )
+        Port map( 
+           buttons      =>  buttons,
+           format12_24  =>  outFormat12_24,
+           clk          =>  clk,
+           stateActive  =>  stateAct,
+           digits0to3   =>  dig0to3Alarma,
+           digits4to7   =>  dig4to7Alarma,
+           blinkControl =>  blinkAlarma 
+        );
+        
 ------------------INSTANCIACION CRONO--------------------------
     intsCronometro : Cronometro
 		Port map(
@@ -179,24 +235,30 @@ begin
     process (currentState)
     begin    
         case currentState is
+            --AJUSTAR HORA
             when S0 =>
                 stateAct <= ('1', others => '0');
-                --AUXILIAR DE MOMENTO PARA DARLE VALOR INICIAL 5HRS 58MIN 0 SECS
-                dig0to3CambHora <= "0101100000000000";
-                dig4to7CambHora <= "1111111100000101";
+                dig0to3General <=  dig0to3CambHora;
+                dig4to7General <=  dig4to7CambHora;
+                blinkGeneral   <=  blinkCambHora;
+            --RELOJ
             when S1 =>
                 stateAct <= "010000";
-                dig0to3General<=dig0to3Reloj;
-                dig4to7General<=dig4to7Reloj;
-                blinkGeneral<=blinkReloj;
+                dig0to3General <= dig0to3Reloj;
+                dig4to7General <= dig4to7Reloj;
+                blinkGeneral   <= blinkReloj;
+            --ALARMA
             when S2 =>
                 stateAct <= "001000";    
+                dig0to3General <= dig0to3Alarma;
+                dig4to7General <= dig4to7Alarma;
+                blinkGeneral   <= blinkAlarma;
             --CRONOMETRO             
             when S3 =>
                 stateAct <= "000100" ;  
-                dig0to3General<=dig0to3Crono;
-                dig4to7General<=dig4to7Crono;
-                blinkGeneral<=blinkCrono;
+                dig0to3General <= dig0to3Crono;
+                dig4to7General <= dig4to7Crono;
+                blinkGeneral <= blinkCrono;
             --FORMATO DE HORA 
             when S4 =>
                 stateAct <= "000010" ;   

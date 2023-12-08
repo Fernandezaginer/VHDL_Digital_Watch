@@ -53,7 +53,7 @@ begin
 --Paso a sig estado
     process ( stateActive, buttons, clk)
     begin
-        if stateActive = "00010" then
+        if stateActive = "000100" then
             if buttons = "0100" then
                 currentState <= S0;
             elsif clk'event and clk = '1' then
@@ -65,7 +65,7 @@ begin
 --Cambio estado
     process ( stateActive, buttons, currentState)
     begin
-        if stateActive = "00010" then
+        if stateActive = "000100" then
             nextState <= currentState;
             case currentState is
                 when S0 =>
@@ -93,7 +93,7 @@ begin
 --Logica de estados
     process (stateActive, currentState, clkSec)
     begin
-        if stateActive = "00010" then
+        if stateActive = "000100" then
             case currentState is
                 when S0 => --Reset
                     udsSecs<="0000"; decSecs<="0000"; udsMin<="0000"; decMin<="0000";

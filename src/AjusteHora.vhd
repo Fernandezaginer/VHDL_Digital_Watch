@@ -31,8 +31,9 @@ architecture Behavioral of AjusteHora is
     signal salidaSecs : std_logic_vector(7 downto 0) := "00000000";
     signal salidaNoUse : std_logic_vector(7 downto 0) := "00000000";
     
-    signal blink_s : std_logic_vector (7 downto 0);
+    signal blink_s : std_logic_vector (7 downto 0):="11111111";
     signal blinkToggle : std_logic := '0';
+    signal counter : integer range 0 to 25000000 := 0;
     
     --MAXIMO DE HORAS INICIALMENTE 24
     signal maxUdsHora : std_logic_vector(3 downto 0) := "0100";
@@ -44,6 +45,13 @@ begin
         if stateActive = codeState then
             if rising_edge (clk) then
                 currentState <= nextState;
+                if counter /= 25000000 then
+                    counter <= counter + 1;
+                else counter <= 0;
+                end if;
+                if counter = 25000000 -1 then
+                    blinkToggle <= not blinkToggle;
+                end if;
             end if;
         end if;
     end process;
@@ -86,7 +94,7 @@ begin
 --Logica de estados
     process (currentState, clk)
     begin    
-        if stateActive = codeState then
+        if stateActive = codeState and rising_edge(clk) then
             case currentState is
                 when S0 =>  --DEC HORAS
                     --si boton arriba suma uno o da la vuelta si esta en max
@@ -105,6 +113,7 @@ begin
                              decHora <= std_logic_vector(to_unsigned(TO_INTEGER(unsigned(decHora)) - 1, decHora'length));
                         end if;
                     end if;
+                    
                     blink_s <= "00" & blinkToggle & "11111";
                 when S1 =>  --UDS HORAS
                     --si boton arriba suma uno o da la vuelta si esta en 9 o dec max y uds max
@@ -126,6 +135,7 @@ begin
                             udsHora <= std_logic_vector(to_unsigned(TO_INTEGER(unsigned(udsHora)) - 1, udsHora'length));
                         end if;
                     end if;
+                    
                      blink_s <= "001" & blinkToggle & "1111";
                 when S2 =>  --DEC MINS
                     --si boton arriba suma uno o da la vuelta si esta en 5
@@ -163,8 +173,7 @@ begin
                             udsMin <= std_logic_vector(to_unsigned(TO_INTEGER(unsigned(udsMin)) - 1, udsMin'length));
                         end if;
                     end if;
-
-     
+                    
                      blink_s <= "00111" & blinkToggle & "11";                           
                 when others =>
             end case;
@@ -199,8 +208,6 @@ begin
             end if;          
         end if;    
     end process; 
-       
-    blinkToggle <= not blinkToggle after 500 ms  ;
     
     digits0to3 <= decMin & udsMin & salidaSecs;
     digits4to7 <= salidaNoUse & decHora & udsHora;

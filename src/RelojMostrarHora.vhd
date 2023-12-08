@@ -7,13 +7,16 @@ use IEEE.STD_LOGIC_1164.ALL;
 use IEEE.numeric_std.all;
 
 entity RelojMostrarHora is
-    Port (  formatMode   : in STD_LOGIC;
-            clk          :in std_logic;
+    Port (  alarmaMins   : in std_logic_vector(15 downto 0);
+            alarmaHora   : in std_logic_vector(15 downto 0);
+            formatMode   : in STD_LOGIC;
+            clk          : in std_logic;
             inicialMins  : in std_logic_vector(15 downto 0); --Inicial primer display
-            inicialHora : in std_logic_vector(15 downto 0);  --inicial segundo display
+            inicialHora  : in std_logic_vector(15 downto 0);  --inicial segundo display
             digits_0to3  : out std_logic_vector(15 downto 0);
             digits_4to7  : out std_logic_vector(15 downto 0);
-            blink_ctrl   : out std_logic_vector(7 downto 0)  
+            blink_ctrl   : out std_logic_vector(7 downto 0);
+            alarmaOn     : out std_logic
     );
 end RelojMostrarHora;
 
@@ -149,9 +152,10 @@ begin
             end if;          
         end if;          
     end process;
-            
-digits_0to3<= decMin & udsMin & decSecs & udsSecs;
-digits_4to7<= digVacios & decHora & udsHora;
+    
+    alarmaOn <= '1' when alarmaMins = decMin & udsMin & decSecs & udsSecs and alarmaHora = digVacios & decHora & udsHora else '0';
+    digits_0to3<= decMin & udsMin & decSecs & udsSecs;
+    digits_4to7<= digVacios & decHora & udsHora;
 --Propuesta REVISAR blink control
 blink_ctrl <= (others => '1');
 end Behavioral;

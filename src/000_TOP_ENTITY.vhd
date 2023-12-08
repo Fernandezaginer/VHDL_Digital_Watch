@@ -160,7 +160,7 @@ begin
             digits_0to3 => digits_0to3,
             digits_4to7 => digits_4to7,
             blink_ctrl => blink_ctrl,
-            buzzer => buzzer
+            buzzer => alarma_1_on
         );
 
 end Structual;
