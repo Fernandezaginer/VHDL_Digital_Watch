@@ -32,8 +32,7 @@ architecture Behavioral of AjusteHora is
     signal salidaNoUse : std_logic_vector(7 downto 0) := "00000000";
     
     signal blink_s : std_logic_vector (7 downto 0):="11111111";
-    signal blinkToggle : std_logic := '0';
-    signal counter : integer range 0 to 25000000 := 0;
+
     
     --MAXIMO DE HORAS INICIALMENTE 24
     signal maxUdsHora : std_logic_vector(3 downto 0) := "0100";
@@ -44,14 +43,7 @@ begin
     begin
         if stateActive = codeState then
             if rising_edge (clk) then
-                currentState <= nextState;
-                if counter /= 25000000 then
-                    counter <= counter + 1;
-                else counter <= 0;
-                end if;
-                if counter = 25000000 -1 then
-                    blinkToggle <= not blinkToggle;
-                end if;
+                currentState <= nextState;              
             end if;
         end if;
     end process;
@@ -114,7 +106,7 @@ begin
                         end if;
                     end if;
                     
-                    blink_s <= "00" & blinkToggle & "11111";
+                    blink_s <= "00100000";
                 when S1 =>  --UDS HORAS
                     --si boton arriba suma uno o da la vuelta si esta en 9 o dec max y uds max
                     if buttons = "0001" then
@@ -136,12 +128,12 @@ begin
                         end if;
                     end if;
                     
-                     blink_s <= "001" & blinkToggle & "1111";
+                     blink_s <= "00010000";
                 when S2 =>  --DEC MINS
                     --si boton arriba suma uno o da la vuelta si esta en 5
                     if buttons = "0001" then
                         if decMin = "0101" then
-                            udsMin <= "0000";
+                            decMin <= "0000";
                         else
                             decMin <= std_logic_vector(to_unsigned(TO_INTEGER(unsigned(decMin)) + 1, decMin'length));
                         end if;
@@ -155,7 +147,7 @@ begin
                         end if;
                     end if;
                     
-                     blink_s <= "0011" & blinkToggle & "111";          
+                     blink_s <= "00001000";          
                 when S3 => --UDS MINS
                     --si boton arriba suma uno o da la vuelta si esta en 9
                     if buttons = "0001" then
@@ -174,39 +166,39 @@ begin
                         end if;
                     end if;
                     
-                     blink_s <= "00111" & blinkToggle & "11";                           
+                     blink_s <= "00000100";                           
                 when others =>
             end case;
         end if;
-         --Paso de 12h a 24h
-        if rising_edge (format12_24) then   
-            maxUdsHora <= "0100";
-            maxDecHora <= "0010";       
-            -- Si uds es de 0-7 es decir de 0-7 y de 10-12 horas suma una decena y dos unidades (12 horas mas)
-            if (udsHora >= "0000" and udsHora < "1000")then
-                decHora <= std_logic_vector(to_unsigned(TO_INTEGER(unsigned(decHora)) + 1, decHora'length));
-                udsHora <= std_logic_vector(to_unsigned(TO_INTEGER(unsigned(udsHora)) + 2, udsHora'length));
-            --Mayor que 7 y menor que 10, de 8-9 pone las decenas a 2 y resta 8 horas
-            elsif udsHora > "0111" and udsHora < "1010" then 
-                udsHora <= std_logic_vector(to_unsigned(TO_INTEGER(unsigned(udsHora)) - 8, udsHora'length));
-                decHora <= std_logic_vector(to_unsigned(TO_INTEGER(unsigned(decHora)) + 2, decHora'length));
-            end if;
-        end if;
-        -- Paso de 24h a 12h
-        if falling_edge(format12_24) then
-            maxUdsHora <= "0010";
-            maxDecHora <= "0001"; 
+--         --Paso de 12h a 24h
+--        if rising_edge (format12_24) then   
+--            maxUdsHora <= "0100";
+--            maxDecHora <= "0010";       
+--            -- Si uds es de 0-7 es decir de 0-7 y de 10-12 horas suma una decena y dos unidades (12 horas mas)
+--            if (udsHora >= "0000" and udsHora < "1000")then
+--                decHora <= std_logic_vector(to_unsigned(TO_INTEGER(unsigned(decHora)) + 1, decHora'length));
+--                udsHora <= std_logic_vector(to_unsigned(TO_INTEGER(unsigned(udsHora)) + 2, udsHora'length));
+--            --Mayor que 7 y menor que 10, de 8-9 pone las decenas a 2 y resta 8 horas
+--            elsif udsHora > "0111" and udsHora < "1010" then 
+--                udsHora <= std_logic_vector(to_unsigned(TO_INTEGER(unsigned(udsHora)) - 8, udsHora'length));
+--                decHora <= std_logic_vector(to_unsigned(TO_INTEGER(unsigned(decHora)) + 2, decHora'length));
+--            end if;
+--        end if;
+--        -- Paso de 24h a 12h
+--        if falling_edge(format12_24) then
+--            maxUdsHora <= "0010";
+--            maxDecHora <= "0001"; 
             
-            -- De 13-19 y de 22-24 resta una decena y dos unidades (12 horas menos)
-            if (decHora = "0001" and udsHora > "0010") or (decHora = "0010" and udsHora > "0001") then
-                decHora <= std_logic_vector(to_unsigned(TO_INTEGER(unsigned(decHora)) - 1, decHora'length));
-                udsHora <= std_logic_vector(to_unsigned(TO_INTEGER(unsigned(udsHora)) - 2, udsHora'length));
-            --De 20-21 pone las decenas a 0 y suma 8 horas
-            elsif decHora = "0010" and udsHora < "0010" then 
-                udsHora <= std_logic_vector(to_unsigned(TO_INTEGER(unsigned(udsHora)) + 8, udsHora'length));
-                decHora <= "0000";
-            end if;          
-        end if;    
+--            -- De 13-19 y de 22-24 resta una decena y dos unidades (12 horas menos)
+--            if (decHora = "0001" and udsHora > "0010") or (decHora = "0010" and udsHora > "0001") then
+--                decHora <= std_logic_vector(to_unsigned(TO_INTEGER(unsigned(decHora)) - 1, decHora'length));
+--                udsHora <= std_logic_vector(to_unsigned(TO_INTEGER(unsigned(udsHora)) - 2, udsHora'length));
+--            --De 20-21 pone las decenas a 0 y suma 8 horas
+--            elsif decHora = "0010" and udsHora < "0010" then 
+--                udsHora <= std_logic_vector(to_unsigned(TO_INTEGER(unsigned(udsHora)) + 8, udsHora'length));
+--                decHora <= "0000";
+--            end if;          
+--        end if;    
     end process; 
     
     digits0to3 <= decMin & udsMin & salidaSecs;

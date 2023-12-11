@@ -157,8 +157,8 @@ begin
             clk => CLK100MHZ,
             buttons  => buttons,
             modeButt => ok,
-            digits_0to3 => digits_0to3,
-            digits_4to7 => digits_4to7,
+            digits_0to3 => digits_4to7,
+            digits_4to7 => digits_0to3,
             blink_ctrl => blink_ctrl,
             buzzer => alarma_1_on
         );

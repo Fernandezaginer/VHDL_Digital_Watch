@@ -18,18 +18,22 @@ end Cronometro;
 
 architecture Behavioral of Cronometro is
 --Declaración Prescaler
-    component Prescaler is
-        generic (
-            DIVIDER_VALUE : integer := 2
-        );
-        Port (
-            clk_in  : in  STD_LOGIC;
-            clk_out : out STD_LOGIC
-        );
+    component RelojesDeTiempo is
+    Port ( clkIn    : in STD_LOGIC;
+           clkSec   : out STD_LOGIC;
+           clkDSec  : out STD_LOGIC;
+           clkMin   : out std_logic;
+           clkDMin  : out std_logic
+    );
     end component;
     
 --Señales    
-    signal clkSec: std_logic ;  --Reloj periodo 1 sec
+    signal clkSec : std_logic ;  --Reloj periodo 1 sec
+    
+    signal clkDSec_s  : std_logic;
+    signal clkMin_s   : std_logic;
+    signal clkDMin_s  : std_logic;
+
     signal udsSecs: std_logic_vector(3 downto 0) := "0000";
     signal decSecs: std_logic_vector(3 downto 0):= "0000";
     signal udsMin: std_logic_vector(3 downto 0):= "0000";
@@ -42,21 +46,24 @@ architecture Behavioral of Cronometro is
 begin
 
 -- Clocks mult
-    div_cll_sec : Prescaler generic map(
-            DIVIDER_VALUE => 100000000 --Paso de frec a 1 sec 
-    )
-    port map(
-        clk_in => clk,
-        clk_out => clkSec
-    );
+    instRelojesCrono: RelojesDeTiempo
+    Port map(
+ 
+	       clkIn    =>     clk,
+           clkSec   =>     clkSec,
+           clkDSec  =>     clkDSec_s,
+           clkMin   =>     clkMin_s,
+           clkDMin  =>     clkDMin_s
+		);
     
 --Paso a sig estado
     process ( stateActive, buttons, clk)
     begin
         if stateActive = "000100" then
-            if buttons = "0100" then
-                currentState <= S0;
-            elsif clk'event and clk = '1' then
+            --if buttons = "0100" then
+                --currentState <= S0;
+            --end if;
+            if rising_edge(clk) then
                 currentState <= nextState;
             end if;
         end if;
@@ -85,20 +92,18 @@ begin
                         nextState <= S1;
                     end if;            
                 when others =>
-                    nextState <= S0;
             end case;
         end if;
     end process;   
 
 --Logica de estados
-    process (stateActive, currentState, clkSec)
+    process (stateActive, currentState, clk)
     begin
-        if stateActive = "000100" then
+        if rising_edge (clkSec) then
             case currentState is
                 when S0 => --Reset
                     udsSecs<="0000"; decSecs<="0000"; udsMin<="0000"; decMin<="0000";
                 when S1 => --Play
-                    if rising_edge (clkSec) then
                         if udsSecs = "1001" then --Limite udsSecs = 9
                             udsSecs <= "0000";
                             if decSecs = "0101" then --Limite decsecs = 5
@@ -118,16 +123,15 @@ begin
                             end if;
                         else
                             udsSecs <= std_logic_vector(to_unsigned(TO_INTEGER(unsigned(udsSecs)) + 1, udsSecs'length)); --se hace un cast a unsigned int para sumar 1 y se vuelve a pasar a std_vector
-                        end if;   
-                    end if;                       
+                        end if;                       
                 when S2 => --Pause
-                    null;
-                when others => udsSecs<="0000"; decSecs<="0000"; udsMin<="0000"; decMin<="0000";          
+                    --null;
+                when others =>       
             end case;            
         end if;
     end process;
     digits_0to3<= decMin & udsMin & decSecs & udsSecs;
     --Propuesta REVISAR blink control
-    blink_ctrl <= (others => '1');
+    blink_ctrl <= (others => '0');
 
 end Behavioral;

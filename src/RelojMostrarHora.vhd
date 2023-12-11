@@ -41,9 +41,15 @@ signal decSecs  : std_logic_vector(3 downto 0):= inicialMins (7 downto 4);
 signal udsMin   : std_logic_vector(3 downto 0):= inicialMins (11 downto 8);
 signal decMin   : std_logic_vector(3 downto 0):= inicialMins (15 downto 12);
 
+signal udsMin_inicial   : std_logic_vector(3 downto 0):= inicialMins (11 downto 8);
+signal decMin_inicial   : std_logic_vector(3 downto 0):= inicialMins (15 downto 12);
+
 --SEGUNDO DISPLAY
 signal udsHora  : std_logic_vector(3 downto 0) := inicialHora (3 downto 0);
 signal decHora  : std_logic_vector(3 downto 0) := inicialHora (7 downto 4);
+
+signal udsHora_inicial  : std_logic_vector(3 downto 0) := inicialHora (3 downto 0);
+signal decHora_inicial  : std_logic_vector(3 downto 0) := inicialHora (7 downto 4);
 signal digVacios : std_logic_vector(7 downto 0) := "00000000";
 
 --MAXIMO DE HORAS INICIALMENTE 24
@@ -62,7 +68,7 @@ begin
            clkMin   =>     clkMin_s,
            clkDMin  =>     clkDMin_s
 		);
-
+		
     process(clk, format)
     begin
         --SUMA UNIDADES DE SEGUNDOS
@@ -150,12 +156,24 @@ begin
                 udsHora <= std_logic_vector(to_unsigned(TO_INTEGER(unsigned(udsHora)) + 8, udsHora'length));
                 decHora <= "0000";
             end if;          
-        end if;          
+        end if; 
+        
+        if udsMin_inicial /= inicialMins(11 downto 8) or decMin_inicial /= inicialMins(15 downto 12) or udsHora_inicial /= inicialHora(3 downto 0) or decHora_inicial /= inicialHora(7 downto 4) then
+            udsMin <= inicialMins (11 downto 8);
+            decMin <= inicialMins (15 downto 12);
+            udsHora <= inicialHora (3 downto 0);
+            decHora <= inicialHora (7 downto 4);
+            
+            udsMin_inicial <=inicialMins(11 downto 8);
+            decMin_inicial <= inicialMins(15 downto 12);
+            udsHora_inicial<=inicialHora(3 downto 0);  
+            decHora_inicial <= inicialHora(7 downto 4);
+        end if; 
     end process;
     
     alarmaOn <= '1' when alarmaMins = decMin & udsMin & decSecs & udsSecs and alarmaHora = digVacios & decHora & udsHora else '0';
     digits_0to3<= decMin & udsMin & decSecs & udsSecs;
     digits_4to7<= digVacios & decHora & udsHora;
 --Propuesta REVISAR blink control
-blink_ctrl <= (others => '1');
+blink_ctrl <= (others => '0');
 end Behavioral;

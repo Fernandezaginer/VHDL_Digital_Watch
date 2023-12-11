@@ -264,7 +264,7 @@ begin
                 stateAct <= "000010" ;   
                 dig0to3General<=dig0to3Formato;
                 dig4to7General<=dig4to7Formato;
-                blinkGeneral<=blinkFormato;          
+                blinkGeneral<= blinkFormato;          
             when others =>
         end case;
     end process; 
