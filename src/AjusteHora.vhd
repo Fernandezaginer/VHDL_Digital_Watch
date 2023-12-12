@@ -29,7 +29,7 @@ architecture Behavioral of AjusteHora is
     signal decHora : std_logic_vector (3 downto 0):= "0000";
     
     signal salidaSecs : std_logic_vector(7 downto 0) := "00000000";
-    signal salidaNoUse : std_logic_vector(7 downto 0) := "00000000";
+    signal salidaNoUse : std_logic_vector(7 downto 0) := "11111111";
     
     signal blink_s : std_logic_vector (7 downto 0):="11111111";
 

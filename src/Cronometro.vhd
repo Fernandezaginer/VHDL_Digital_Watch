@@ -17,23 +17,19 @@ entity Cronometro is
 end Cronometro;
 
 architecture Behavioral of Cronometro is
---Declaración Prescaler
-    component RelojesDeTiempo is
-    Port ( clkIn    : in STD_LOGIC;
-           clkSec   : out STD_LOGIC;
-           clkDSec  : out STD_LOGIC;
-           clkMin   : out std_logic;
-           clkDMin  : out std_logic
+    component clock_divider is
+        generic (
+        DIVISOR : natural := 10
+    );
+    port (
+        clk_in  : in  std_logic;
+        clk_out : out std_logic
     );
     end component;
     
 --Señales    
-    signal clkSec : std_logic ;  --Reloj periodo 1 sec
+    signal clkSec : std_logic ;  --Reloj de 1 sec
     
-    signal clkDSec_s  : std_logic;
-    signal clkMin_s   : std_logic;
-    signal clkDMin_s  : std_logic;
-
     signal udsSecs: std_logic_vector(3 downto 0) := "0000";
     signal decSecs: std_logic_vector(3 downto 0):= "0000";
     signal udsMin: std_logic_vector(3 downto 0):= "0000";
@@ -45,24 +41,18 @@ architecture Behavioral of Cronometro is
     signal nextState: STATES;
 begin
 
--- Clocks mult
-    instRelojesCrono: RelojesDeTiempo
-    Port map(
- 
-	       clkIn    =>     clk,
-           clkSec   =>     clkSec,
-           clkDSec  =>     clkDSec_s,
-           clkMin   =>     clkMin_s,
-           clkDMin  =>     clkDMin_s
-		);
+    div_clK_sec : clock_divider generic map(
+            DIVISOR => 100000000 --Paso de frec a 1 sec 
+    )
+    port map(
+        clk_in => clk,
+        clk_out => clkSec
+    );
     
 --Paso a sig estado
     process ( stateActive, buttons, clk)
     begin
         if stateActive = "000100" then
-            --if buttons = "0100" then
-                --currentState <= S0;
-            --end if;
             if rising_edge(clk) then
                 currentState <= nextState;
             end if;
@@ -131,7 +121,6 @@ begin
         end if;
     end process;
     digits_0to3<= decMin & udsMin & decSecs & udsSecs;
-    --Propuesta REVISAR blink control
     blink_ctrl <= (others => '0');
 
 end Behavioral;

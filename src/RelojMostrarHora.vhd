@@ -21,19 +21,18 @@ entity RelojMostrarHora is
 end RelojMostrarHora;
 
 architecture Behavioral of RelojMostrarHora is
-component RelojesDeTiempo is
-    Port ( clkIn    : in STD_LOGIC;
-           clkSec   : out STD_LOGIC;
-           clkDSec  : out STD_LOGIC;
-           clkMin   : out std_logic;
-           clkDMin  : out std_logic
-    );
+component clock_divider is
+generic (
+    DIVISOR : natural := 10
+);
+port (
+    clk_in  : in  std_logic;
+    clk_out : out std_logic
+);
 end component;
---CADA SEÑAL DE RELOJ MARCA CON SU FLANCO DE SUBIDA UN INCREMENTO DE TIEMPO
+
+--SEÑAL DE RELOJ QUE TIENE UN FLANCO DE SUBIDA CADA SEGUNDO
 signal clkSec_s   : std_logic;
-signal clkDSec_s  : std_logic;
-signal clkMin_s   : std_logic;
-signal clkDMin_s  : std_logic;
 
 --PRIMER DISPLAY
 signal udsSecs  : std_logic_vector(3 downto 0):= inicialMins (3 downto 0);
@@ -50,7 +49,7 @@ signal decHora  : std_logic_vector(3 downto 0) := inicialHora (7 downto 4);
 
 signal udsHora_inicial  : std_logic_vector(3 downto 0) := inicialHora (3 downto 0);
 signal decHora_inicial  : std_logic_vector(3 downto 0) := inicialHora (7 downto 4);
-signal digVacios : std_logic_vector(7 downto 0) := "00000000";
+signal digVacios : std_logic_vector(7 downto 0) := "11111111";
 
 --MAXIMO DE HORAS INICIALMENTE 24
 signal maxUdsHora : std_logic_vector(3 downto 0) := "0100";
@@ -59,72 +58,49 @@ signal maxDecHora : std_logic_vector(3 downto 0) := "0010";
 signal format : std_logic := formatMode;
 
 begin
-    instRelojes: RelojesDeTiempo
-    Port map(
- 
-	       clkIn    =>     clk,
-           clkSec   =>     clkSec_S,
-           clkDSec  =>     clkDSec_s,
-           clkMin   =>     clkMin_s,
-           clkDMin  =>     clkDMin_s
-		);
-		
+    div_cl_sec : clock_divider generic map(
+            DIVISOR => 100000000 --Paso de frec a 1 sec 
+    )
+    port map(
+        clk_in => clk,
+        clk_out => clkSec_S
+    );
+    		
     process(clk, format)
     begin
-        --SUMA UNIDADES DE SEGUNDOS
-        if rising_edge (clkSec_s) then
-            if udsSecs = "1001" then
+        if rising_edge(clkSec_S) then
+            if udsSecs = "1001" then --Limite udsSecs = 9
                 udsSecs <= "0000";
+                if decSecs = "0101" then --Limite decsecs = 5
+                    decSecs <= "0000";
+                    if udsMin = "1001" then --Limite udsMin = 9
+                        udsMin <= "0000";
+                        if decMin = "0101" then --Limite decMin = 5
+                            decMin <= "0000";
+                            if udsHora = "1001" or (decHora = maxDecHora and udsHora = maxUdsHora) then 
+                                udsHora <= "0000";
+                                if decHora = maxDecHora and udsHora = maxUdshora then 
+                                    decHora <= "0000";
+                                else
+                                    decHora <= std_logic_vector(to_unsigned(TO_INTEGER(unsigned(decHora)) + 1, decHora'length));
+                                end if;
+                            else
+                                udsHora <= std_logic_vector(to_unsigned(TO_INTEGER(unsigned(udsHora)) + 1, udsHora'length));
+                            end if;
+                        else 
+                            decMin <=std_logic_vector(to_unsigned(TO_INTEGER(unsigned(decMin)) + 1, decMin'length)); --Suma "10" min
+                        end if;
+                    else
+                        udsMin <= std_logic_vector(to_unsigned(TO_INTEGER(unsigned(udsMin)) + 1, udsMin'length)); --Suma 1 min
+                    end if;
+                else
+                    decSecs <= std_logic_vector(to_unsigned(TO_INTEGER(unsigned(decSecs)) + 1, decSecs'length)); --Suma "10" secs
+                end if;
             else
-                udsSecs <= std_logic_vector(to_unsigned(TO_INTEGER(unsigned(udsSecs)) + 1, udsSecs'length));
+                udsSecs <= std_logic_vector(to_unsigned(TO_INTEGER(unsigned(udsSecs)) + 1, udsSecs'length)); --se hace un cast a unsigned int para sumar 1 y se vuelve a pasar a std_vector
             end if;
         end if;
-        
-        --SUMA DECENAS DE SEGUNDOS
-        if rising_edge (clkDSec_s) then
-            if decSecs = "0101" then
-                decSecs <= "0000";
-            else
-                decSecs <= std_logic_vector(to_unsigned(TO_INTEGER(unsigned(decSecs)) + 1, decSecs'length));
-            end if;
-        end if;
-        
-        --SUMA UNIDADES DE MINUTOS
-        if rising_edge (clkMin_s) then
-            if udsMin = "1001" then
-                udsMin <= "0000";
-            else
-                udsMin <= std_logic_vector(to_unsigned(TO_INTEGER(unsigned(udsMin)) + 1, udsMin'length));
-            end if;
-        end if;
-        
-        --SUMA DECENAS DE MINUTOS
-        if rising_edge (clkDMin_s) then
-            if decMin = "0101" then
-                decMin <= "0000";
-            else
-                decMin <= std_logic_vector(to_unsigned(TO_INTEGER(unsigned(decMin)) + 1, decMin'length));
-            end if;
-        end if;
-        
-        --SUMA UNIDADES DE HORAS
-        if rising_edge (clkDMin_s) and decMin = "0101" and udsMin = "1001" then
-            if udsHora = "1001" or (decHora = maxDecHora and udsHora = maxUdsHora) then 
-                udsHora <= "0000";
-            else 
-                udsHora <= std_logic_vector(to_unsigned(TO_INTEGER(unsigned(udsHora)) + 1, udsHora'length));
-            end if;
-        end if;
-        
-        --SUMA DECENAS DE HORAS
-        if rising_edge (clkDMin_s) and (udshora = "1001" or (decHora = maxDecHora and udsHora = maxUdshora)) then
-            if decHora = maxDecHora and udsHora = maxUdshora then 
-                decHora <= "0000";
-            else
-                decHora <= std_logic_vector(to_unsigned(TO_INTEGER(unsigned(decHora)) + 1, decHora'length));
-            end if;
-        end if; 
-       
+    
         --Paso de 12h a 24h
         if rising_edge (format) then
             --Cambia los máximos para que cuente hasta el nuevo maximo
@@ -158,6 +134,7 @@ begin
             end if;          
         end if; 
         
+        --ACTUALIZACION DE HORA AJUSTADA
         if udsMin_inicial /= inicialMins(11 downto 8) or decMin_inicial /= inicialMins(15 downto 12) or udsHora_inicial /= inicialHora(3 downto 0) or decHora_inicial /= inicialHora(7 downto 4) then
             udsMin <= inicialMins (11 downto 8);
             decMin <= inicialMins (15 downto 12);
@@ -171,9 +148,10 @@ begin
         end if; 
     end process;
     
+    --ACTIVACION ALARMA
     alarmaOn <= '1' when alarmaMins = decMin & udsMin & decSecs & udsSecs and alarmaHora = digVacios & decHora & udsHora else '0';
+    
     digits_0to3<= decMin & udsMin & decSecs & udsSecs;
     digits_4to7<= digVacios & decHora & udsHora;
---Propuesta REVISAR blink control
-blink_ctrl <= (others => '0');
+    blink_ctrl <= (others => '0');
 end Behavioral;

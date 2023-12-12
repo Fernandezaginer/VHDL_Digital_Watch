@@ -257,7 +257,7 @@ begin
             when S3 =>
                 stateAct <= "000100" ;  
                 dig0to3General <= dig0to3Crono;
-                dig4to7General <= dig4to7Crono;
+                dig4to7General <= "1111111111111111"; --dig4to7Crono;
                 blinkGeneral <= blinkCrono;
             --FORMATO DE HORA 
             when S4 =>
