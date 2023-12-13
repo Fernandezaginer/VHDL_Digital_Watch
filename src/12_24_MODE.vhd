@@ -31,18 +31,65 @@ end display_12_24;
 
 
 architecture Behavioral of display_12_24 is
-    signal out_mode_s : std_logic := '1';
+    --signal out_mode_s : std_logic := '1';
+    type STATES is (S0,S1);
+    signal currentState: STATES := S0; --El primer estado es ajustar la hora
+    signal nextState: STATES;
+
+    signal out_mode_s : std_logic;
 begin
-    process(clk)
-	begin
-	   if stateActive = "000010" then
-           if (buttons = "0001") then
-               out_mode_s <= '1';
-           elsif (buttons = "1000") then
-               out_mode_s <= '0';
-           end if;	
-       end if;   
-	end process;
+    --Paso a siguiente estado
+    process (clk)
+    begin
+        if rising_edge (clk) then
+            currentState <= nextState;
+        end if;
+    end process;
+    
+    --Cambio de estado
+    process(buttons, currentState)
+    begin
+    if stateActive = "000010" then
+        nextState <= currentState;
+        case currentState is
+            when S0 =>
+                if buttons = "1000" then
+                nextState <= S1;
+                end if;
+            when S1 =>
+                if buttons = "0001" then
+                nextState <= S0;
+                end if;
+            when others =>
+        end case; 
+    end if;               
+    end process;
+    
+    --Logica de estados
+    process (currentState)
+    begin    
+        case currentState is
+
+            when S0 =>
+                out_mode_s <= '1'; 
+
+            when S1 =>
+                out_mode_s <= '0';   
+            when others =>
+        end case;
+    end process;
+    
+--    process(clk)
+--	begin
+--	   if stateActive = "000010" then
+--           if (buttons = "0001") then
+--               out_mode_s <= '1';
+--           end if;
+--           if (buttons = "1000") then
+--               out_mode_s <= '0';
+--           end if;	
+--       end if;   
+--	end process;
 	--0 = 12h; 1 = 24H;
     out_mode <= out_mode_s;
 	digits_0to3 <= "0010010011111100" when out_mode_s = '1'  AND stateActive = "000010" 

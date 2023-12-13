@@ -21,7 +21,6 @@ architecture Behavioral of fsm_global is
 ---------------------------------------------------------------------------------------------------------------------------
 --DECLARACION DE COMPONENTES
 ---------------------------------------------------------------------------------------------------------------------------
-
 component AjusteHora is
     generic (
     codeState : std_logic_vector (5 downto 0) := "100000"   --Estado de funcionamiento (ajuste o alarma)
@@ -140,7 +139,7 @@ begin
     instReloj : RelojMostrarHora
         Port map(
             alarmaMins     => dig0to3Alarma,
-            alarmaHora     => dig0to3Alarma,
+            alarmaHora     => dig4to7Alarma,
             formatMode     => outFormat12_24,    --Recibe el formato 12/24 de el componente correspondiente
             clk            => clk, 
             inicialMins    => dig0to3CambHora,
