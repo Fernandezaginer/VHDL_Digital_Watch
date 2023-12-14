@@ -44,9 +44,14 @@ signal decMin   : std_logic_vector(3 downto 0):= inicialMins (15 downto 12);
 signal udsMin_inicial   : std_logic_vector(3 downto 0):= inicialMins (11 downto 8);
 signal decMin_inicial   : std_logic_vector(3 downto 0):= inicialMins (15 downto 12);
 
+
+
 --SEGUNDO DISPLAY
 signal udsHora  : std_logic_vector(3 downto 0) := inicialHora (3 downto 0);
 signal decHora  : std_logic_vector(3 downto 0) := inicialHora (7 downto 4);
+
+signal udsHoraDisp  : std_logic_vector(3 downto 0) := inicialHora (3 downto 0);
+signal decHoraDisp  : std_logic_vector(3 downto 0) := inicialHora (7 downto 4);
 
 signal udsHora_inicial  : std_logic_vector(3 downto 0) := inicialHora (3 downto 0);
 signal decHora_inicial  : std_logic_vector(3 downto 0) := inicialHora (7 downto 4);
@@ -74,7 +79,7 @@ begin
         clk_out => clkSec_S
     );
     
-    --format <= formatMode;	
+    format <= formatMode;   
     alarmaUdsMin <= alarmaMins(11 downto 8);
     alarmaDecMin <= alarmaMins(15 downto 12);
     alarmaUdsHora <= alarmaHora(3 downto 0);
@@ -114,6 +119,10 @@ begin
             end if;
         end if;
     
+
+
+
+
 ----        --Paso de 12h a 24h
 --        if format = '1' and maxUdsHora = "0010" then
 --            --Cambia los máximos para que cuente hasta el nuevo maximo
@@ -150,6 +159,24 @@ begin
 --            --horaen12 <= '1';     
 --        end if; 
         
+
+
+----        --Paso de 12h a 24h  V2
+        if to_integer(unsigned(decHora)) > 0 and to_integer(unsigned(udsHora)) > 2 and format = '0' then
+            udsHoraDisp <= std_logic_vector(to_unsigned(to_integer(unsigned(udsHora)) - 2 , 4));
+            decHoraDisp <= std_logic_vector(to_unsigned(to_integer(unsigned(decHora)) - 1 , 4));
+        else
+            udsHoraDisp <= udsHora;
+            decHoraDisp <= decHora;
+        end if;
+    
+    
+
+
+
+
+
+
         --ACTUALIZACION DE HORA AJUSTADA
         if udsMin_inicial /= inicialMins(11 downto 8) or decMin_inicial /= inicialMins(15 downto 12) or udsHora_inicial /= inicialHora(3 downto 0) or decHora_inicial /= inicialHora(7 downto 4) then
             udsMin <= inicialMins (11 downto 8);
@@ -168,6 +195,7 @@ begin
     alarmaOn <= '1' when alarmaUdsMin = udsMin and alarmaDecMin = decMin and alarmaUdsHora = udsHora and alarmaDecHora = decHora and udsSecs < "0101" else '0';
     
     digits_0to3<= decMin & udsMin & decSecs & udsSecs;
-    digits_4to7<= digVacios & decHora & udsHora;
+    digits_4to7<= digVacios & decHoraDisp & udsHoraDisp;
+
     blink_ctrl <= (others => '0');
 end Behavioral;
