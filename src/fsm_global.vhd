@@ -72,12 +72,45 @@ component display_12_24 is
         out_mode    : out std_logic
     );
 end component;
+
+component date_selector is
+    generic(
+        MODE_NUM  : std_logic_vector(3 downto 0) := "1111"
+    );
+    port(
+        clk : in std_logic;
+        buttons : in std_logic_vector(3 downto 0);
+        mode : in std_logic_vector(3 downto 0);
+        day_up : in std_logic;
+        digits_0to3 : out std_logic_vector(15 downto 0);
+        digits_4to7 : out std_logic_vector(15 downto 0);
+        blink_ctrl : out std_logic_vector(7 downto 0);
+        year_up : out std_logic
+    );
+end component;
+
+component year_selector is
+    generic(
+        MODE_NUM  : std_logic_vector(3 downto 0) := "1111"
+    );
+    port(
+        clk : in std_logic;
+        buttons : in std_logic_vector(3 downto 0);
+        mode : in std_logic_vector(3 downto 0);
+        year_up : in std_logic;
+        digits_0to3 : out std_logic_vector(15 downto 0);
+        digits_4to7 : out std_logic_vector(15 downto 0);
+        blink_ctrl : out std_logic_vector(7 downto 0);
+        year_out : out integer                               -- No en BCD
+    );
+end component;
 ---------------------------------------------------------------------------------------------------------------------------
 --DECLARACION DE SEÑALES
 ---------------------------------------------------------------------------------------------------------------------------
     --MAQUINA DE ESTADOS
-    --S0: Cambia hora; S1:Muestra hora; S2: set alarma; S3: Cronometro; S4: Formato hora 12/24h
-    type STATES is (S0,S1,S2,S3,S4,S5);
+    -- Estados: 
+    -- 0 DISPLAY HORA, 1 DISPLAY FECHA & ANIO, 2 CONFIG HORA, 3 CONFIG FECHA, 4 CONFIG ANIO , 5 ALARMA, 6 CORNOMETRO, 7 FORMATO DE HORA
+    type STATES is (S0,S1,S2,S3,S4,S5,S6,S7);
     signal currentState: STATES := S0; --El primer estado es ajustar la hora
     signal nextState: STATES;
     
@@ -87,19 +120,34 @@ end component;
     signal blinkGeneral     : std_logic_vector(7 downto 0);
     
     --Vector de señales de activación componentes
-    signal stateAct : std_logic_vector (5 downto 0); 
+    signal stateAct : std_logic_vector (7 downto 0); 
     
 --------SEÑALES DE SALIDA DE CADA COMPONENTE/ESTADO--------
-    --Señales salida cambiar hora
-    signal dig0to3CambHora : std_logic_vector(15 downto 0);
-    signal dig4to7CambHora : std_logic_vector(15 downto 0);
-    signal blinkCambHora   : std_logic_vector(7 downto 0);
-
     --Señales salida reloj mostrar hora
     signal dig0to3Reloj : std_logic_vector(15 downto 0);
     signal dig4to7Reloj : std_logic_vector(15 downto 0);
     signal blinkReloj   : std_logic_vector(7 downto 0);
     
+    --Señales mostrar fecha y año
+    signal dig0to3DispFecha : std_logic_vector(15 downto 0);
+    signal dig4to7DispFecha : std_logic_vector(15 downto 0);
+    signal blinkDispFecha   : std_logic_vector(7 downto 0);
+
+    --Señales salida cambiar hora
+    signal dig0to3CambHora : std_logic_vector(15 downto 0);
+    signal dig4to7CambHora : std_logic_vector(15 downto 0);
+    signal blinkCambHora   : std_logic_vector(7 downto 0);
+
+    --Señales configuracion fecha
+    signal dig0to3CambFecha : std_logic_vector(15 downto 0);
+    signal dig4to7CambFecha : std_logic_vector(15 downto 0);
+    signal blinkCambFecha   : std_logic_vector(7 downto 0);
+
+    --Señales configuración anio
+    signal dig0to3CambAnio : std_logic_vector(15 downto 0);
+    signal dig4to7CambAnio : std_logic_vector(15 downto 0);
+    signal blinkCambAnio   : std_logic_vector(7 downto 0);
+
     --Señales salida alarma
     signal dig0to3Alarma : std_logic_vector(15 downto 0);
     signal dig4to7Alarma : std_logic_vector(15 downto 0);
@@ -116,6 +164,8 @@ end component;
     signal blinkFormato     : std_logic_vector(7 downto 0);
     signal outFormat12_24   : std_logic := '0'; --señal formato de hora 12/24h
     
+
+
 begin
 ---------------------------------------------------------------------------------------------------------------------------
 --INSTANCIACION DE COMPONENTES
@@ -149,6 +199,45 @@ begin
 	        blink_ctrl     => blinkReloj,
 	        alarmaOn       => buzzer
 	    );
+
+-------------------INSTANCIACION FECHA--------------------------
+    
+
+    instFecha : date_selector is
+        generic(
+            MODE_NUM  : std_logic_vector(3 downto 0) := "1111"
+        )
+        port(
+            clk : in std_logic;
+            buttons : in std_logic_vector(3 downto 0);
+            mode : in std_logic_vector(3 downto 0);
+            day_up : in std_logic;
+            digits_0to3 : out std_logic_vector(15 downto 0);
+            digits_4to7 : out std_logic_vector(15 downto 0);
+            blink_ctrl : out std_logic_vector(7 downto 0);
+            year_up : out std_logic
+        );
+
+
+-------------------INSTANCIACION ANO----------------------------
+    
+    
+    instAnio : year_selector is
+    generic(
+        MODE_NUM  : std_logic_vector(3 downto 0) := "1111"
+    )
+    port(
+        clk : in std_logic;
+        buttons : in std_logic_vector(3 downto 0);
+        mode : in std_logic_vector(3 downto 0);
+        year_up : in std_logic;
+        digits_0to3 : out std_logic_vector(15 downto 0);
+        digits_4to7 : out std_logic_vector(15 downto 0);
+        blink_ctrl : out std_logic_vector(7 downto 0);
+        year_out : out integer                               -- No en BCD
+    );
+
+
 
 ------------------INSTANCIACION ALARMA--------------------------
     instAlarma : AjusteHora 
@@ -190,6 +279,14 @@ begin
 	        out_mode        => outFormat12_24
 	    );
 
+
+
+
+
+
+
+
+
 ---------------------------------------------------------------------------------------------------------------------------
 --MAQUINA DE ESTADOS
 ---------------------------------------------------------------------------------------------------------------------------    
@@ -224,43 +321,121 @@ begin
                 end if; 
             when S4 =>
                 if modeButt='1' then
+                nextState <= S5;
+                end if; 
+            when S5 =>
+                if modeButt='1' then
+                nextState <= S6;
+                end if; 
+            when S6 =>
+                if modeButt='1' then
+                nextState <= S7;
+                end if; 
+            when S7 =>
+                if modeButt='1' then
                 nextState <= S0;
                 end if; 
             when others =>
         end case;                
     end process;
 
+
+
+
+
+
+
+
+
+
+
+    
+
+    --Señales salida cambiar hora
+    
+    --Señales configuracion fecha
+    signal dig0to3CambFecha : std_logic_vector(15 downto 0);
+    signal dig4to7CambFecha : std_logic_vector(15 downto 0);
+    signal blinkCambFecha   : std_logic_vector(7 downto 0);
+
+    --Señales configuración anio
+    signal dig0to3CambAnio : std_logic_vector(15 downto 0);
+    signal dig4to7CambAnio : std_logic_vector(15 downto 0);
+    signal blinkCambAnio   : std_logic_vector(7 downto 0);
+
+    --Señales salida alarma
+    signal dig0to3Alarma : std_logic_vector(15 downto 0);
+    signal dig4to7Alarma : std_logic_vector(15 downto 0);
+    signal blinkAlarma   : std_logic_vector(7 downto 0);
+    
+    --Señales salida cronometro
+    signal dig0to3Crono : std_logic_vector(15 downto 0);
+    signal dig4to7Crono : std_logic_vector(15 downto 0);
+    signal blinkCrono   : std_logic_vector(7 downto 0);
+    
+    --Señales salida formato 12/24h
+    signal dig0to3Formato   : std_logic_vector(15 downto 0);
+    signal dig4to7Formato   : std_logic_vector(15 downto 0);
+    signal blinkFormato     : std_logic_vector(7 downto 0);
+    signal outFormat12_24   : std_logic := '0'; --señal formato de hora 12/24h
+
+
+
+
 --Logica de estados
     process (currentState)
     begin    
         case currentState is
-            --AJUSTAR HORA
+            --DISPLAY HORA
             when S0 =>
                 stateAct <= ('1', others => '0');
-                dig0to3General <=  dig0to3CambHora;
-                dig4to7General <=  dig4to7CambHora;
-                blinkGeneral   <=  blinkCambHora;
-            --RELOJ
+                dig0to3General <=  dig0to3Reloj;
+                dig4to7General <=  dig4to7Reloj;
+                blinkGeneral   <=  blinkReloj;
+            --DISPLAY FECHA & ANIO
             when S1 =>
-                stateAct <= "010000";
-                dig0to3General <= dig0to3Reloj;
-                dig4to7General <= dig4to7Reloj;
-                blinkGeneral   <= blinkReloj;
-            --ALARMA
+                stateAct <= "01000000";
+                dig0to3General <= dig0to3DispFecha;
+                dig4to7General <= dig4to7DispFecha;
+                blinkGeneral   <= blinkDispFecha;
+            --CONFIG HORA
             when S2 =>
-                stateAct <= "001000";    
-                dig0to3General <= dig0to3Alarma;
-                dig4to7General <= dig4to7Alarma;
-                blinkGeneral   <= blinkAlarma;
-            --CRONOMETRO             
+                stateAct <= "00100000";    
+
+    
+    
+    
+
+                dig0to3General <= dig0to3CambHora;
+                dig4to7General <= dig4to7CambHora;
+                blinkGeneral   <= blinkCambHora;
+            --CONFIG FECHA
             when S3 =>
-                stateAct <= "000100" ;  
+                stateAct <= "00010000" ;  
                 dig0to3General <= dig0to3Crono;
                 dig4to7General <= "1111111111111111"; --dig4to7Crono;
                 blinkGeneral <= blinkCrono;
-            --FORMATO DE HORA 
+            --CONFIG ANIO 
             when S4 =>
-                stateAct <= "000010" ;   
+                stateAct <= "00001000" ;   
+                dig0to3General<=dig0to3Formato;
+                dig4to7General<=dig4to7Formato;
+                blinkGeneral<= blinkFormato;          
+            --ALARMA
+            when S5 =>
+                stateAct <= "00000100" ;   
+                dig0to3General<=dig0to3Formato;
+                dig4to7General<=dig4to7Formato;
+                blinkGeneral<= blinkFormato;          
+            --CORNOMETRO
+            when S6 =>
+                stateAct <= "00000010" ;   
+                dig0to3General<=dig0to3Formato;
+                dig4to7General<=dig4to7Formato;
+                blinkGeneral<= blinkFormato;          
+            --FORMATO DE HORA
+            when S7 =>
+                stateAct <= "00000001" ;   
                 dig0to3General<=dig0to3Formato;
                 dig4to7General<=dig4to7Formato;
                 blinkGeneral<= blinkFormato;          
