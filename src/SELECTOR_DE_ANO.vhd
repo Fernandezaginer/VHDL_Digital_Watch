@@ -35,7 +35,7 @@ end entity;
 
 architecture Structual of year_selector is 
 
-	component EDGEDTCTR is
+	component EDGEDTCTR_V2 is
 	    port (
 	        CLK : in std_logic;
 	        SYNC_IN : in std_logic;
@@ -58,7 +58,7 @@ architecture Structual of year_selector is
 begin
 
 
-	detector_flanco: EDGEDTCTR
+	detector_flanco: EDGEDTCTR_V2
 	    port map (
 	        CLK => CLK,
 	        SYNC_IN => year_up,

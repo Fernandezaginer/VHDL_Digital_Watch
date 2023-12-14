@@ -40,7 +40,6 @@ architecture BEHAVIORAL of EDGEDTCTR_V2 is
                 out_s <= '1';
                 end_s <= '1';
             end if;
-
         end if;
     end process;
     

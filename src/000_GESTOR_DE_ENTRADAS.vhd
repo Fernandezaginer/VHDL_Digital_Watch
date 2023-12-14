@@ -36,6 +36,7 @@ architecture Structual of gestor_de_entradas is
 	        SYNC_OUT : out std_logic
 	    );
 	end component;
+
 	component EDGEDTCTR_V2 is
 	    port (
 	        CLK : in std_logic;
@@ -52,19 +53,20 @@ architecture Structual of gestor_de_entradas is
 begin
 
 	SYNCHRNZR_up : SYNCHRNZR port map (CLK => CLK, ASYNC_IN => UP_SW, SYNC_OUT => s_up);
-	EDGEDTCTR_up : EDGEDTCTR_V2 port map (CLK => CLK, SYNC_IN => s_up, EDGE => UP);
+	EDGEDTCTR_up : EDGEDTCTR_v2 port map (CLK => CLK, SYNC_IN => s_up, EDGE => UP);
 
 	SYNCHRNZR_down : SYNCHRNZR port map (CLK => CLK, ASYNC_IN => DOWN_SW, SYNC_OUT => s_down);
-	EDGEDTCTR_down : EDGEDTCTR_V2 port map (CLK => CLK, SYNC_IN => s_down, EDGE => DOWN);
+	EDGEDTCTR_down : EDGEDTCTR_v2 port map (CLK => CLK, SYNC_IN => s_down, EDGE => DOWN);
 
 	SYNCHRNZR_left : SYNCHRNZR port map (CLK => CLK, ASYNC_IN => LEFT_SW, SYNC_OUT => s_left);
-	EDGEDTCTR_left : EDGEDTCTR_V2 port map (CLK => CLK, SYNC_IN => s_left, EDGE => LEFT);
+	EDGEDTCTR_left : EDGEDTCTR_v2 port map (CLK => CLK, SYNC_IN => s_left, EDGE => LEFT);
 
 	SYNCHRNZR_right : SYNCHRNZR port map (CLK => CLK, ASYNC_IN => RIGHT_SW, SYNC_OUT => s_right);
-	EDGEDTCTR_right : EDGEDTCTR_V2 port map (CLK => CLK, SYNC_IN => s_right, EDGE => RIGHT);
+	EDGEDTCTR_right : EDGEDTCTR_v2 port map (CLK => CLK, SYNC_IN => s_right, EDGE => RIGHT);
 
 	SYNCHRNZR_ok : SYNCHRNZR port map (CLK => CLK, ASYNC_IN => OK_SW, SYNC_OUT => s_ok);
-	EDGEDTCTR_ok : EDGEDTCTR_V2 port map (CLK => CLK, SYNC_IN => s_ok, EDGE => OK);
+	EDGEDTCTR_ok : EDGEDTCTR_v2 port map (CLK => CLK, SYNC_IN => s_ok, EDGE => OK);
+
 
 end Structual;
 
