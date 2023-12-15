@@ -18,12 +18,12 @@ use UNISIM.VComponents.all;
 
 entity year_selector is
 	generic(
-		MODE_NUM  : std_logic_vector(3 downto 0) := "1111"
+		MODE_NUM  : std_logic_vector(7 downto 0) := "11111111"
 	);
 	port(
 		clk : in std_logic;
 		buttons : in std_logic_vector(3 downto 0);
-		mode : in std_logic_vector(3 downto 0);
+        stateActive: in std_logic_vector(7 downto 0);
 		year_up : in std_logic;
 		digits_0to3 : out std_logic_vector(15 downto 0);
 		digits_4to7 : out std_logic_vector(15 downto 0);
@@ -73,7 +73,7 @@ begin
 				year <= year + 1;
 			end if;
 
-	    	if mode = MODE_NUM then
+	    	if stateActive = MODE_NUM then
 		        if buttons = "0001" then         -- up
 				year <= year + 1;
 		        elsif buttons = "1000" then      -- down

@@ -28,7 +28,7 @@ component AjusteHora is
     Port ( buttons      : in STD_LOGIC_VECTOR (3 downto 0);
            format12_24  : in STD_LOGIC;
            clk          : in STD_LOGIC;
-           stateActive  : in STD_LOGIC_VECTOR (5 downto 0);
+           stateActive : in std_logic_vector(7 downto 0);
            digits0to3   : out STD_LOGIC_VECTOR (15 downto 0);
            digits4to7   : out STD_LOGIC_VECTOR (15 downto 0);
            blinkControl : out STD_LOGIC_VECTOR (7 downto 0));
@@ -51,7 +51,7 @@ end component;
 component Cronometro is
     Port (  clk         :in std_logic;
             buttons     : in std_logic_vector(3 downto 0);
-            stateActive : in std_logic_vector(5 downto 0);
+            stateActive : in std_logic_vector(7 downto 0);
             digits_0to3 : out std_logic_vector(15 downto 0);
             digits_4to7 : out std_logic_vector(15 downto 0);
             blink_ctrl  : out std_logic_vector(7 downto 0)         
@@ -65,7 +65,7 @@ component display_12_24 is
     Port (
         clk : in std_logic;
         buttons     : in std_logic_vector(3 downto 0);
-        stateActive : in std_logic_vector(5 downto 0);
+        stateActive : in std_logic_vector(7 downto 0);
         digits_0to3 : out std_logic_vector(15 downto 0);
         digits_4to7 : out std_logic_vector(15 downto 0);
         blink_ctrl  : out std_logic_vector(7 downto 0);
@@ -201,43 +201,36 @@ begin
 	    );
 
 -------------------INSTANCIACION FECHA--------------------------
-    
-
     instFecha : date_selector is
         generic(
             MODE_NUM  : std_logic_vector(3 downto 0) := "1111"
         )
         port(
-            clk : in std_logic;
-            buttons : in std_logic_vector(3 downto 0);
-            mode : in std_logic_vector(3 downto 0);
-            day_up : in std_logic;
-            digits_0to3 : out std_logic_vector(15 downto 0);
-            digits_4to7 : out std_logic_vector(15 downto 0);
-            blink_ctrl : out std_logic_vector(7 downto 0);
-            year_up : out std_logic
+            clk => clk,
+            buttons => buttons,
+            mode => ,
+            day_up => ,
+            digits_0to3 => ,
+            digits_4to7 => ,
+            blink_ctrl => ,
+            year_up => 
         );
 
-
 -------------------INSTANCIACION ANO----------------------------
-    
-    
     instAnio : year_selector is
     generic(
         MODE_NUM  : std_logic_vector(3 downto 0) := "1111"
     )
     port(
-        clk : in std_logic;
-        buttons : in std_logic_vector(3 downto 0);
-        mode : in std_logic_vector(3 downto 0);
-        year_up : in std_logic;
-        digits_0to3 : out std_logic_vector(15 downto 0);
-        digits_4to7 : out std_logic_vector(15 downto 0);
-        blink_ctrl : out std_logic_vector(7 downto 0);
-        year_out : out integer                               -- No en BCD
+        clk  => clk,
+        buttons  => buttons,
+        mode  => ,
+        year_up  => ,
+        digits_0to3  => ,
+        digits_4to7  => ,
+        blink_ctrl  => ,
+        year_out  => 
     );
-
-
 
 ------------------INSTANCIACION ALARMA--------------------------
     instAlarma : AjusteHora 
@@ -341,47 +334,6 @@ begin
 
 
 
-
-
-
-
-
-
-
-
-    
-
-    --Señales salida cambiar hora
-    
-    --Señales configuracion fecha
-    signal dig0to3CambFecha : std_logic_vector(15 downto 0);
-    signal dig4to7CambFecha : std_logic_vector(15 downto 0);
-    signal blinkCambFecha   : std_logic_vector(7 downto 0);
-
-    --Señales configuración anio
-    signal dig0to3CambAnio : std_logic_vector(15 downto 0);
-    signal dig4to7CambAnio : std_logic_vector(15 downto 0);
-    signal blinkCambAnio   : std_logic_vector(7 downto 0);
-
-    --Señales salida alarma
-    signal dig0to3Alarma : std_logic_vector(15 downto 0);
-    signal dig4to7Alarma : std_logic_vector(15 downto 0);
-    signal blinkAlarma   : std_logic_vector(7 downto 0);
-    
-    --Señales salida cronometro
-    signal dig0to3Crono : std_logic_vector(15 downto 0);
-    signal dig4to7Crono : std_logic_vector(15 downto 0);
-    signal blinkCrono   : std_logic_vector(7 downto 0);
-    
-    --Señales salida formato 12/24h
-    signal dig0to3Formato   : std_logic_vector(15 downto 0);
-    signal dig4to7Formato   : std_logic_vector(15 downto 0);
-    signal blinkFormato     : std_logic_vector(7 downto 0);
-    signal outFormat12_24   : std_logic := '0'; --señal formato de hora 12/24h
-
-
-
-
 --Logica de estados
     process (currentState)
     begin    
@@ -401,38 +353,33 @@ begin
             --CONFIG HORA
             when S2 =>
                 stateAct <= "00100000";    
-
-    
-    
-    
-
                 dig0to3General <= dig0to3CambHora;
                 dig4to7General <= dig4to7CambHora;
                 blinkGeneral   <= blinkCambHora;
             --CONFIG FECHA
             when S3 =>
                 stateAct <= "00010000" ;  
-                dig0to3General <= dig0to3Crono;
-                dig4to7General <= "1111111111111111"; --dig4to7Crono;
-                blinkGeneral <= blinkCrono;
+                dig0to3General <= dig0to3CambFecha;
+                dig4to7General <= dig4to7CambFecha;
+                blinkGeneral <= blinkCambFecha;
             --CONFIG ANIO 
             when S4 =>
                 stateAct <= "00001000" ;   
-                dig0to3General<=dig0to3Formato;
-                dig4to7General<=dig4to7Formato;
-                blinkGeneral<= blinkFormato;          
+                dig0to3General<= dig0to3CambAnio;
+                dig4to7General<= dig4to7CambAnio;
+                blinkGeneral<= blinkCambAnio;
             --ALARMA
             when S5 =>
                 stateAct <= "00000100" ;   
-                dig0to3General<=dig0to3Formato;
-                dig4to7General<=dig4to7Formato;
-                blinkGeneral<= blinkFormato;          
+                dig0to3General<=dig0to3Alarma;
+                dig4to7General<=dig4to7Alarma;
+                blinkGeneral<=blinkAlarma;          
             --CORNOMETRO
             when S6 =>
                 stateAct <= "00000010" ;   
-                dig0to3General<=dig0to3Formato;
-                dig4to7General<=dig4to7Formato;
-                blinkGeneral<= blinkFormato;          
+                dig0to3General<=dig0to3Crono;
+                dig4to7General<=dig4to7Crono;
+                blinkGeneral<=blinkCrono;
             --FORMATO DE HORA
             when S7 =>
                 stateAct <= "00000001" ;   

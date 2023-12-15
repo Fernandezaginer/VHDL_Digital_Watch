@@ -6,12 +6,12 @@ use IEEE.numeric_std.all;
 
 entity AjusteHora is
     generic (
-    codeState : std_logic_vector (5 downto 0) := "100000"   --Estado de funcionamiento (ajuste o alarma)
+    codeState : std_logic_vector (7 downto 0) := "10000000"   --Estado de funcionamiento (ajuste o alarma)
     );
     Port ( buttons      : in STD_LOGIC_VECTOR (3 downto 0);
            format12_24  : in STD_LOGIC;
            clk          : in STD_LOGIC;
-           stateActive  : in STD_LOGIC_VECTOR (5 downto 0);
+           stateActive  : in STD_LOGIC_VECTOR (7 downto 0);
            digits0to3   : out STD_LOGIC_VECTOR (15 downto 0);
            digits4to7   : out STD_LOGIC_VECTOR (15 downto 0);
            blinkControl : out STD_LOGIC_VECTOR (7 downto 0));

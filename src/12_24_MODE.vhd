@@ -16,12 +16,12 @@ use UNISIM.VComponents.all;
 
 entity display_12_24 is
     generic(
-        MODE_NUM : std_logic_vector(3 downto 0) := "1111"
+        MODE_NUM : std_logic_vector(7 downto 0) := "11111111"
         );
     Port (
         clk : in std_logic;
         buttons: in std_logic_vector(3 downto 0);
-        stateActive: in std_logic_vector(5 downto 0);
+        stateActive: in std_logic_vector(7 downto 0);
         digits_0to3 : out std_logic_vector(15 downto 0);
         digits_4to7 : out std_logic_vector(15 downto 0);
         blink_ctrl : out std_logic_vector(7 downto 0);

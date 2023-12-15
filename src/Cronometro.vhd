@@ -7,9 +7,12 @@ use IEEE.STD_LOGIC_1164.ALL;
 use IEEE.numeric_std.all;
 
 entity Cronometro is
+    generic (
+        codeState : std_logic_vector (7 downto 0) := "10000000"   --Estado de funcionamiento (ajuste o alarma)
+    );
   Port (clk:in std_logic;
         buttons: in std_logic_vector(3 downto 0);
-        stateActive: in std_logic_vector(5 downto 0);
+        stateActive: in std_logic_vector(7 downto 0);
         digits_0to3 : out std_logic_vector(15 downto 0);
         digits_4to7 : out std_logic_vector(15 downto 0);
         blink_ctrl : out std_logic_vector(7 downto 0)         
@@ -52,7 +55,7 @@ begin
 --Paso a sig estado
     process ( stateActive, buttons, clk)
     begin
-        if stateActive = "000100" then
+        if stateActive = codeState then
             if rising_edge(clk) then
                 currentState <= nextState;
             end if;
@@ -62,7 +65,7 @@ begin
 --Cambio estado
     process ( stateActive, buttons, currentState)
     begin
-        if stateActive = "000100" then
+        if stateActive = codeState then
             nextState <= currentState;
             case currentState is
                 when S0 =>

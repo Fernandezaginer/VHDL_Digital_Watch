@@ -14,12 +14,12 @@ use UNISIM.VComponents.all;
 
 entity date_selector is
 	generic(
-		MODE_NUM  : std_logic_vector(3 downto 0) := "1111"
+		MODE_NUM  : std_logic_vector(7 downto 0) := "11111111"
 	);
 	port(
 		clk : in std_logic;
 		buttons : in std_logic_vector(3 downto 0);
-		mode : in std_logic_vector(3 downto 0);
+        stateActive: in std_logic_vector(7 downto 0);
 		day_up : in std_logic;
 		digits_0to3 : out std_logic_vector(15 downto 0);
 		digits_4to7 : out std_logic_vector(15 downto 0);
@@ -83,8 +83,8 @@ begin
 						year_flag <= '1';
 					end if;
 				end if;
-				
-	    	elsif mode = MODE_NUM then
+
+	    	elsif stateActive = MODE_NUM then
 		        if buttons = "0001" then         -- up
 		            if (digit_sel = "01" and day < 31) then
 		              day <= day + 1;
