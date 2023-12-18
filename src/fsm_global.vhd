@@ -50,6 +50,9 @@ component RelojMostrarHora is
 end component;
 
 component Cronometro is
+    generic (
+        codeState : std_logic_vector (7 downto 0) := "10000000"   --Estado de funcionamiento (ajuste o alarma)
+    );
     Port (  clk         :in std_logic;
             buttons     : in std_logic_vector(3 downto 0);
             stateActive : in std_logic_vector(7 downto 0);
@@ -238,15 +241,15 @@ begin
         year_out  => year
     );
 
------------------- DISPLAY FECHA Y ANIO  --------------------------  
-    dig0to3DispFecha <= dig0to3CambFecha;
-    dig4to7DispFecha <= dig4to7CambAnio;
+------------------ DISPLAY FECHA Y ANIO  -----------------------  
+    dig0to3DispFecha <= dig4to7CambAnio;
+    dig4to7DispFecha <= dig4to7CambFecha;
     blinkDispFecha <= "00000000";
 
 ------------------INSTANCIACION ALARMA--------------------------
-    instAlarma : AjusteHora 
+    instAlarma : AjusteHora
         generic map(
-            codeState => "00100000"   --Estado de funcionamiento (ajuste o alarma)
+            codeState => "00000100"   --Estado de funcionamiento (ajuste o alarma)
         )
         Port map( 
            buttons      =>  buttons,
@@ -260,6 +263,9 @@ begin
         
 ------------------INSTANCIACION CRONO--------------------------
     intsCronometro : Cronometro
+        generic map(
+            codeState => "00000010"
+        )
 		Port map(
 	        clk            => clk, 
 	        buttons        => buttons,

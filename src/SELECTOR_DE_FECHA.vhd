@@ -95,9 +95,9 @@ begin
 		        	--day <= day + 1 when (digit_sel = "01" and day < 31) else day;
 		        	--month <= month + 1 when (digit_sel = "10" and month < 12) else month;
 		        elsif buttons = "0010" then      -- left
-					digit_sel <= "10";
-		        elsif buttons = "0100" then      -- right
 					digit_sel <= "01";
+		        elsif buttons = "0100" then      -- right
+					digit_sel <= "10";
 		        elsif buttons = "1000" then      -- down
 		            if (digit_sel = "01" and day > 1) then
 		              day <= day - 1;
@@ -137,14 +137,15 @@ begin
 
 	digits_0to3 <= "1111111111111111";
 
-	digits_4to7(15 downto 12) <= std_logic_vector(to_unsigned(month_msb,4));
-	digits_4to7(11 downto 8) <= std_logic_vector(to_unsigned(month_lsb,4));
-	digits_4to7(7 downto 4) <= std_logic_vector(to_unsigned(day_msb,4));
-	digits_4to7(3 downto 0) <= std_logic_vector(to_unsigned(day_lsb,4));
+	digits_4to7(15 downto 12) <= std_logic_vector(to_unsigned(day_msb,4));
+	digits_4to7(11 downto 8) <= std_logic_vector(to_unsigned(day_lsb,4));
+	digits_4to7(7 downto 4) <= std_logic_vector(to_unsigned(month_msb,4));
+	digits_4to7(3 downto 0) <= std_logic_vector(to_unsigned(month_lsb,4));
 
-	blink_ctrl(7 downto 4) <= "0000";
-	blink_ctrl(3 downto 2) <= "11" when stateActive = MODE_NUM and digit_sel = "10" else "00";
-	blink_ctrl(1 downto 0) <= "11" when stateActive = MODE_NUM and digit_sel = "01" else "00";
+	blink_ctrl(7 downto 6) <= "11" when stateActive = MODE_NUM and digit_sel = "01" else "00";
+	blink_ctrl(5 downto 4) <= "11" when stateActive = MODE_NUM and digit_sel = "10" else "00";
+	blink_ctrl(3 downto 2) <= "11" when stateActive = MODE_NUM and digit_sel = "01" else "00";
+	blink_ctrl(1 downto 0) <= "11" when stateActive = MODE_NUM and digit_sel = "10" else "00";
 
 
 

@@ -97,7 +97,7 @@ begin
 
 	digits_0to3 <= "1111111111111111";
 
-	blink_ctrl(7 downto 4) <= "0000";
+	blink_ctrl(7 downto 4) <= "1111" when stateActive = MODE_NUM  else "0000";
 	blink_ctrl(3 downto 0) <= "1111" when stateActive = MODE_NUM  else "0000";
 
 	year_out <= year;

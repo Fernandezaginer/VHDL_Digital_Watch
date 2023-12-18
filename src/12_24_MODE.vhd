@@ -32,6 +32,7 @@ end display_12_24;
 
 architecture Behavioral of display_12_24 is
     --signal out_mode_s : std_logic := '1';
+    
     type STATES is (S0,S1);
     signal currentState: STATES := S0; --El primer estado es ajustar la hora
     signal nextState: STATES;
@@ -49,7 +50,7 @@ begin
     --Cambio de estado
     process(buttons, currentState)
     begin
-    if stateActive = "000010" then
+    if stateActive = MODE_NUM then
         nextState <= currentState;
         case currentState is
             when S0 =>
@@ -81,7 +82,7 @@ begin
     
 --    process(clk)
 --	begin
---	   if stateActive = "000010" then
+--	   if stateActive = MODE_NUM then
 --           if (buttons = "0001") then
 --               out_mode_s <= '1';
 --           end if;
@@ -92,11 +93,11 @@ begin
 --	end process;
 	--0 = 12h; 1 = 24H;
     out_mode <= out_mode_s;
-	digits_0to3 <= "0010010011111100" when out_mode_s = '1'  AND stateActive = "000010" 
-	   else "0001001011111100" when out_mode_s = '0'  AND stateActive = "000010" ;
-	digits_4to7 <= "1111111111111111" when out_mode_s = '1' AND stateActive = "000010" 
-	   else "1111111111111111" when out_mode_s = '0'  AND stateActive = "000010" ;
-    blink_ctrl <= "11110000" when stateActive = "000010";
+	digits_0to3 <= "0010010011111100" when out_mode_s = '1'  AND stateActive = MODE_NUM 
+	   else "0001001011111100" when out_mode_s = '0'  AND stateActive = MODE_NUM ;
+	digits_4to7 <= "1111111111111111" when out_mode_s = '1' AND stateActive = MODE_NUM
+	   else "1111111111111111" when out_mode_s = '0'  AND stateActive = MODE_NUM;
+    blink_ctrl <= "11111111" when stateActive = MODE_NUM;
 end Behavioral;
 
 

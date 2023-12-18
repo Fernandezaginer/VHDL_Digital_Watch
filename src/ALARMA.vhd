@@ -34,8 +34,11 @@ architecture Behavioral of alarma is
 	    );
 	end component;
 
+	signal on1_edge : std_logic := '0';
+	signal on2_edge : std_logic := '0';
 	signal on3 : std_logic;
 	signal freq_buzzer : std_logic;
+	signal freq_alm : std_logic;
 	signal buzzer_on :std_logic;
 	signal buzzer_beep_counter : integer;
 
@@ -58,9 +61,20 @@ begin
 
 			if buttons_beep(0) = '1' or buttons_beep(1) = '1' or buttons_beep(2) = '1' or buttons_beep(3) = '1' or ok_beep = '1' then
 				on3 <= '1';
+				on1_edge <= '0';
+				on2_edge <= '0';
 				buzzer_beep_counter <= 0;
 			end if;
 		end if;
+
+		if rising_edge(on1) then
+			on1_edge <= '1';
+		end if;
+
+		if rising_edge(on2) then
+			on2_edge <= '1';
+		end if;
+
 	end process;
 
 
@@ -69,8 +83,13 @@ begin
 	port map (clk_in => clk, clk_out => freq_buzzer);
 	
 
+	-- despertador frequency
+	Prescaler_freq_alm : Prescaler generic map(DIVIDER_VALUE => 50000000)
+	port map (clk_in => clk, clk_out => freq_alm);
+
+
 	-- buzzer out square signal
-	buzzer_on <= on1 or on2 or on3;
+	buzzer_on <= (on1_edge and freq_alm) or (on2_edge and freq_alm) or on3;
 	buzzer <= freq_buzzer and buzzer_on;
 
 end architecture Behavioral;
