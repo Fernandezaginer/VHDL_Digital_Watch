@@ -1,5 +1,5 @@
 -- Trabajo SED 23/24 Grupo 2
--- Selector de aÃ±o
+-- Selector de año
 -- Entidad general
 
 
@@ -90,15 +90,15 @@ begin
 	end process;
 
 
-	digits_0to3(15 downto 12) <= std_logic_vector(to_unsigned(year_3,4));
-	digits_0to3(11 downto 8) <= std_logic_vector(to_unsigned(year_2,4));
-	digits_0to3(7 downto 4) <=  std_logic_vector(to_unsigned(year_1,4));
-	digits_0to3(3 downto 0) <=  std_logic_vector(to_unsigned(year_0,4));
+	digits_4to7(15 downto 12) <= std_logic_vector(to_unsigned(year_3,4));
+	digits_4to7(11 downto 8) <= std_logic_vector(to_unsigned(year_2,4));
+	digits_4to7(7 downto 4) <=  std_logic_vector(to_unsigned(year_1,4));
+	digits_4to7(3 downto 0) <=  std_logic_vector(to_unsigned(year_0,4));
 
-	digits_4to7 <= "1111111111111111";
+	digits_0to3 <= "1111111111111111";
 
-	blink_ctrl(3 downto 0) <= "0000";
-	blink_ctrl(7 downto 4) <= "1111" when mode = MODE_NUM  else "0000";
+	blink_ctrl(7 downto 4) <= "0000";
+	blink_ctrl(3 downto 0) <= "1111" when stateActive = MODE_NUM  else "0000";
 
 	year_out <= year;
 	

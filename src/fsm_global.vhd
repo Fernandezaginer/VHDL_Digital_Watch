@@ -23,7 +23,7 @@ architecture Behavioral of fsm_global is
 ---------------------------------------------------------------------------------------------------------------------------
 component AjusteHora is
     generic (
-    codeState : std_logic_vector (5 downto 0) := "100000"   --Estado de funcionamiento (ajuste o alarma)
+    codeState : std_logic_vector (7 downto 0) := "00100000"   --Estado de funcionamiento (ajuste o alarma)
     );
     Port ( buttons      : in STD_LOGIC_VECTOR (3 downto 0);
            format12_24  : in STD_LOGIC;
@@ -44,6 +44,7 @@ component RelojMostrarHora is
             digits_0to3  : out std_logic_vector(15 downto 0);
             digits_4to7  : out std_logic_vector(15 downto 0);
             blink_ctrl   : out std_logic_vector(7 downto 0);
+            day_up       : out std_logic; 
             alarmaOn     : out std_logic  
     );
 end component;
@@ -60,7 +61,7 @@ end component;
 
 component display_12_24 is
     generic(
-        MODE_NUM : std_logic_vector(3 downto 0) := "1111"
+        MODE_NUM : std_logic_vector(7 downto 0) := "00000000"
         );
     Port (
         clk : in std_logic;
@@ -75,12 +76,12 @@ end component;
 
 component date_selector is
     generic(
-        MODE_NUM  : std_logic_vector(3 downto 0) := "1111"
+        MODE_NUM  : std_logic_vector(7 downto 0) := "00000000"
     );
     port(
         clk : in std_logic;
         buttons : in std_logic_vector(3 downto 0);
-        mode : in std_logic_vector(3 downto 0);
+        stateActive : in std_logic_vector(7 downto 0);
         day_up : in std_logic;
         digits_0to3 : out std_logic_vector(15 downto 0);
         digits_4to7 : out std_logic_vector(15 downto 0);
@@ -91,12 +92,12 @@ end component;
 
 component year_selector is
     generic(
-        MODE_NUM  : std_logic_vector(3 downto 0) := "1111"
+        MODE_NUM  : std_logic_vector(7 downto 0) := "00000000"
     );
     port(
         clk : in std_logic;
         buttons : in std_logic_vector(3 downto 0);
-        mode : in std_logic_vector(3 downto 0);
+        stateActive : in std_logic_vector(7 downto 0);
         year_up : in std_logic;
         digits_0to3 : out std_logic_vector(15 downto 0);
         digits_4to7 : out std_logic_vector(15 downto 0);
@@ -163,7 +164,11 @@ end component;
     signal dig4to7Formato   : std_logic_vector(15 downto 0);
     signal blinkFormato     : std_logic_vector(7 downto 0);
     signal outFormat12_24   : std_logic := '0'; --señal formato de hora 12/24h
-    
+
+---------------------SEÑALES INTERNAS----------------------------------
+    signal day_up : std_logic;
+    signal year_up : std_logic;
+    signal year : integer;   --NC
 
 
 begin
@@ -173,7 +178,7 @@ begin
 ------------------INSTANCIACION CAMBIO DE HORA--------------------------
     instCambHora : AjusteHora 
         generic map(
-            codeState => "100000"   --Estado de funcionamiento (ajuste o alarma)
+            codeState => "00100000"   --Estado de funcionamiento (ajuste o alarma)
         )
         Port map( 
            buttons      =>  buttons,
@@ -197,45 +202,51 @@ begin
 	        digits_0to3    => dig0to3Reloj,
 	        digits_4to7    => dig4to7Reloj,
 	        blink_ctrl     => blinkReloj,
+            day_up         => day_up, 
 	        alarmaOn       => buzzer
 	    );
 
 -------------------INSTANCIACION FECHA--------------------------
-    instFecha : date_selector is
-        generic(
-            MODE_NUM  : std_logic_vector(3 downto 0) := "1111"
+    instFecha : date_selector
+        generic map(
+            MODE_NUM  => "00010000"
         )
-        port(
+        port map(
             clk => clk,
             buttons => buttons,
-            mode => ,
-            day_up => ,
-            digits_0to3 => ,
-            digits_4to7 => ,
-            blink_ctrl => ,
-            year_up => 
+            stateActive => stateAct,
+            day_up => day_up,
+            digits_0to3 => dig0to3CambFecha,
+            digits_4to7 => dig4to7CambFecha,
+            blink_ctrl => blinkCambFecha,
+            year_up => year_up
         );
 
 -------------------INSTANCIACION ANO----------------------------
-    instAnio : year_selector is
-    generic(
-        MODE_NUM  : std_logic_vector(3 downto 0) := "1111"
+    instAnio : year_selector
+    generic map(
+        MODE_NUM  => "00001000"
     )
-    port(
+    port map(
         clk  => clk,
         buttons  => buttons,
-        mode  => ,
-        year_up  => ,
-        digits_0to3  => ,
-        digits_4to7  => ,
-        blink_ctrl  => ,
-        year_out  => 
+        stateActive  => stateAct,
+        year_up  => year_up,
+        digits_0to3  => dig0to3CambAnio,
+        digits_4to7  => dig4to7CambAnio,
+        blink_ctrl  => blinkCambAnio,
+        year_out  => year
     );
+
+------------------ DISPLAY FECHA Y ANIO  --------------------------  
+    dig0to3DispFecha <= dig0to3CambFecha;
+    dig4to7DispFecha <= dig4to7CambAnio;
+    blinkDispFecha <= "00000000";
 
 ------------------INSTANCIACION ALARMA--------------------------
     instAlarma : AjusteHora 
         generic map(
-            codeState => "001000"   --Estado de funcionamiento (ajuste o alarma)
+            codeState => "00100000"   --Estado de funcionamiento (ajuste o alarma)
         )
         Port map( 
            buttons      =>  buttons,
@@ -260,7 +271,7 @@ begin
 ------------------INSTANCIACION FORMATO HORA--------------------------		
     instFormat12_24 : display_12_24
 		generic map(
-			MODE_NUM => "1000"
+			MODE_NUM => "00000001"
 			)
 	    Port map (
             clk             => clk,
@@ -271,9 +282,6 @@ begin
 	        blink_ctrl      => blinkFormato,
 	        out_mode        => outFormat12_24
 	    );
-
-
-
 
 
 

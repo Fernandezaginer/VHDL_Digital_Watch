@@ -16,6 +16,7 @@ entity RelojMostrarHora is
             digits_0to3  : out std_logic_vector(15 downto 0);
             digits_4to7  : out std_logic_vector(15 downto 0);
             blink_ctrl   : out std_logic_vector(7 downto 0);
+            day_up       : out std_logic; 
             alarmaOn     : out std_logic
     );
 end RelojMostrarHora;
@@ -86,6 +87,7 @@ begin
     alarmaDecHora <= alarmaHora(7 downto 4);
     process(clk)
     begin
+        day_up <= '0';
         if rising_edge(clkSec_S) then
             if udsSecs = "1001" then --Limite udsSecs = 9
                 udsSecs <= "0000";
@@ -99,6 +101,7 @@ begin
                                 udsHora <= "0000";
                                 if decHora = maxDecHora and udsHora = maxUdshora then 
                                     decHora <= "0000";
+                                    day_up <= '1';
                                 else
                                     decHora <= std_logic_vector(to_unsigned(TO_INTEGER(unsigned(decHora)) + 1, decHora'length));
                                 end if;
@@ -122,45 +125,6 @@ begin
 
 
 
-
-----        --Paso de 12h a 24h
---        if format = '1' and maxUdsHora = "0010" then
---            --Cambia los máximos para que cuente hasta el nuevo maximo
---            maxUdsHora <= "0100";
---            maxDecHora <= "0010";
-            
---            -- Si uds es de 0-7 es decir de 0-7 y de 10-12 horas suma una decena y dos unidades (12 horas mas)
---            if (udsHora >= "0000" and udsHora < "1000")then
---                decHora <= std_logic_vector(to_unsigned(TO_INTEGER(unsigned(decHora)) + 1, decHora'length));
---                udsHora <= std_logic_vector(to_unsigned(TO_INTEGER(unsigned(udsHora)) + 2, udsHora'length));
---            --Mayor que 7 y menor que 10, de 8-9 pone las decenas a 2 y resta 8 horas
---            elsif udsHora > "0111" and udsHora < "1010" then 
---                udsHora <= std_logic_vector(to_unsigned(TO_INTEGER(unsigned(udsHora)) - 8, udsHora'length));
---                decHora <= std_logic_vector(to_unsigned(TO_INTEGER(unsigned(decHora)) + 2, decHora'length));
---            end if;
-            
---        end if;
---        -- Paso de 24h a 12h
---        if format = '0' and maxUdsHora = "0100" then
---            --Cambia los máximos para que cuente hasta el nuevo maximo
---            maxUdsHora <= "0010";
---            maxDecHora <= "0001"; 
-            
---            -- De 13-19 y de 22-24 resta una decena y dos unidades (12 horas menos)
---            if (decHora = "0001" and udsHora > "0010") or (decHora = "0010" and udsHora > "0001") then
---                decHora <= std_logic_vector(to_unsigned(TO_INTEGER(unsigned(decHora)) - 1, decHora'length));
---                udsHora <= std_logic_vector(to_unsigned(TO_INTEGER(unsigned(udsHora)) - 2, udsHora'length));
---            --De 20-21 pone las decenas a 0 y suma 8 horas
---            elsif decHora = "0010" and udsHora < "0010" then 
---                udsHora <= std_logic_vector(to_unsigned(TO_INTEGER(unsigned(udsHora)) + 8, udsHora'length));
---                decHora <= "0000";
---            end if;    
-            
---            --horaen12 <= '1';     
---        end if; 
-        
-
-
 ----        --Paso de 12h a 24h  V2
         if to_integer(unsigned(decHora)) > 0 and to_integer(unsigned(udsHora)) > 2 and format = '0' then
             udsHoraDisp <= std_logic_vector(to_unsigned(to_integer(unsigned(udsHora)) - 2 , 4));
@@ -171,11 +135,6 @@ begin
         end if;
     
     
-
-
-
-
-
 
         --ACTUALIZACION DE HORA AJUSTADA
         if udsMin_inicial /= inicialMins(11 downto 8) or decMin_inicial /= inicialMins(15 downto 12) or udsHora_inicial /= inicialHora(3 downto 0) or decHora_inicial /= inicialHora(7 downto 4) then

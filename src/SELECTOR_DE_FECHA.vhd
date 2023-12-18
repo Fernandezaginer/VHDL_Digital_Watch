@@ -143,8 +143,8 @@ begin
 	digits_4to7(3 downto 0) <= std_logic_vector(to_unsigned(day_lsb,4));
 
 	blink_ctrl(7 downto 4) <= "0000";
-	blink_ctrl(3 downto 2) <= "11" when mode = MODE_NUM and digit_sel = "10" else "00";
-	blink_ctrl(1 downto 0) <= "11" when mode = MODE_NUM and digit_sel = "01" else "00";
+	blink_ctrl(3 downto 2) <= "11" when stateActive = MODE_NUM and digit_sel = "10" else "00";
+	blink_ctrl(1 downto 0) <= "11" when stateActive = MODE_NUM and digit_sel = "01" else "00";
 
 
 
