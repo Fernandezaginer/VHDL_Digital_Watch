@@ -51,7 +51,7 @@ architecture Structual of date_selector is
 	signal day_up_edge : std_logic;
 	signal year_flag : std_logic := '0';
 
-	signal digit_sel : std_logic_vector(1 downto 0) := "10";
+	signal digit_sel : std_logic_vector(1 downto 0) := "01";
 begin
 
 

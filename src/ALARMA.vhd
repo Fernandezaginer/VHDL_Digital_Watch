@@ -50,6 +50,14 @@ begin
 	process(CLK)
 	begin
 		if rising_edge(CLK) then
+
+			if on1 = '1' then
+				on1_edge <= '1';
+			end if;
+			if on2 = '1' then
+				on2_edge <= '1';
+			end if;
+
 			if on3 = '1' and buzzer_beep_counter < BUZZER_BEEPS_COUNTS then
 				buzzer_beep_counter <= buzzer_beep_counter + 1;
 			end if;
@@ -67,13 +75,6 @@ begin
 			end if;
 		end if;
 
-		if rising_edge(on1) then
-			on1_edge <= '1';
-		end if;
-
-		if rising_edge(on2) then
-			on2_edge <= '1';
-		end if;
 
 	end process;
 

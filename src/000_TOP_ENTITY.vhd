@@ -102,7 +102,7 @@ end component;
 
     signal mode : std_logic_vector(3 downto 0);
     constant MODE_DAY_SELECT : std_logic_vector(3 downto 0):= "0101";
-    signal alarma_1_on : std_logic;
+    signal alarma_1_on : std_logic:='0';
     signal alarma_2_on  : std_logic:='0';
 
 begin

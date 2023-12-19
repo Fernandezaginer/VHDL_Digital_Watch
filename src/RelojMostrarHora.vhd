@@ -151,7 +151,7 @@ begin
     end process;
     
     --ACTIVACION ALARMA
-    alarmaOn <= '1' when alarmaUdsMin = udsMin and alarmaDecMin = decMin and alarmaUdsHora = udsHora and alarmaDecHora = decHora and udsSecs < "0101" else '0';
+    alarmaOn <= '1' when ((alarmaUdsMin = udsMin) and (alarmaDecMin = decMin) and (alarmaUdsHora = udsHora) and (alarmaDecHora = decHora) and (decSecs = "0000") and (udsSecs < "0010")) else '0';
     
     digits_0to3<= decMin & udsMin & decSecs & udsSecs;
     digits_4to7<= digVacios & decHoraDisp & udsHoraDisp;

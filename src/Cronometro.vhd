@@ -123,7 +123,8 @@ begin
             end case;            
         end if;
     end process;
-    digits_0to3<= decMin & udsMin & decSecs & udsSecs;
+    digits_0to3 <= decMin & udsMin & decSecs & udsSecs;
+    digits_4to7 <= "1111111111111111";
     blink_ctrl <= (others => '0');
 
 end Behavioral;
