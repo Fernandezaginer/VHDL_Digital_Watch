@@ -74,7 +74,7 @@ begin
 			
 			if day_up_edge = '1' then
 				day <= day + 1;
-				if day >= dia_maximo_segun_mes(month) then
+				if (day + 1) > dia_maximo_segun_mes(month-1) then
 					day <= 1;
 					month <= month + 1;
 					if month >= 13 then
@@ -124,6 +124,12 @@ begin
 	       		month_lsb <= month;
 	       	end if;
 	       	
+			if (day + 1) > dia_maximo_segun_mes(month-1) then
+				day <= dia_maximo_segun_mes(month-1);
+			end if;
+
+
+
 	       	if day >= 10 then
 	       		day_msb <= (day / 10) mod 10;
 	       		day_lsb <= day - (((day / 10) mod 10)*10);

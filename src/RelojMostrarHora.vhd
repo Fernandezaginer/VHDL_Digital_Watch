@@ -44,6 +44,8 @@ signal decMin   : std_logic_vector(3 downto 0):= inicialMins (15 downto 12);
 
 signal udsMin_inicial   : std_logic_vector(3 downto 0):= inicialMins (11 downto 8);
 signal decMin_inicial   : std_logic_vector(3 downto 0):= inicialMins (15 downto 12);
+signal horas_aux : integer;
+
 
 
 
@@ -125,16 +127,17 @@ begin
 
 
 
-----        --Paso de 12h a 24h  V2
-        if to_integer(unsigned(decHora)) > 0 and to_integer(unsigned(udsHora)) > 2 and format = '0' then
-            udsHoraDisp <= std_logic_vector(to_unsigned(to_integer(unsigned(udsHora)) - 2 , 4));
-            decHoraDisp <= std_logic_vector(to_unsigned(to_integer(unsigned(decHora)) - 1 , 4));
+        --Paso de 12h a 24h  V2
+        horas_aux <= (to_integer(unsigned(decHora))*10 + to_integer(unsigned(udsHora)));
+        if horas_aux > 12 and format = '0' then
+            udsHoraDisp <= std_logic_vector(to_unsigned( ((horas_aux - 12) - ((((horas_aux - 12) / 10) mod 10)*10)),  4));
+            decHoraDisp <= std_logic_vector(to_unsigned( ((horas_aux - 12) / 10) mod 10 , 4));
         else
             udsHoraDisp <= udsHora;
             decHoraDisp <= decHora;
         end if;
-    
-    
+        
+        
 
         --ACTUALIZACION DE HORA AJUSTADA
         if udsMin_inicial /= inicialMins(11 downto 8) or decMin_inicial /= inicialMins(15 downto 12) or udsHora_inicial /= inicialHora(3 downto 0) or decHora_inicial /= inicialHora(7 downto 4) then
