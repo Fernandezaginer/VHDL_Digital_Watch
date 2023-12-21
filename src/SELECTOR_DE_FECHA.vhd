@@ -40,7 +40,7 @@ architecture Structual of date_selector is
 	end component;
 
 	type MonthDayMax is array(0 to 11) of integer;
-	signal dia_maximo_segun_mes: MonthDayMax := (31,30,31,30,31,31,30,31,30,31,28,31);
+	signal dia_maximo_segun_mes: MonthDayMax := (31,28,31,30,31,30,31,31,30,31,30,31);
 	signal selected_day : integer := 0;
 	signal day: integer := 1;
 	signal month: integer := 1;
@@ -67,6 +67,7 @@ begin
 	begin
 		if rising_edge(clk) then
 
+
 			if year_flag = '1' then
 				year_flag <= '0';
 				year_up <= '0';
@@ -74,10 +75,10 @@ begin
 			
 			if day_up_edge = '1' then
 				day <= day + 1;
-				if (day + 1) > dia_maximo_segun_mes(month-1) then
+				if (day +1) > dia_maximo_segun_mes(month-1) then
 					day <= 1;
 					month <= month + 1;
-					if month >= 13 then
+					if (month+1) > 12 then
 						month <= 1;
 						year_up <= '1';
 						year_flag <= '1';
@@ -114,6 +115,11 @@ begin
 		        if selected_day > 6 then
 		            selected_day <= 6;
 		        end if;
+
+    			if (day) > dia_maximo_segun_mes(month-1) then
+					day <= dia_maximo_segun_mes(month-1);
+				end if;
+
 	        end if;
 
 	       	if month > 9 then
@@ -123,12 +129,6 @@ begin
 	       		month_msb <= 0;
 	       		month_lsb <= month;
 	       	end if;
-	       	
-			if (day + 1) > dia_maximo_segun_mes(month-1) then
-				day <= dia_maximo_segun_mes(month-1);
-			end if;
-
-
 
 	       	if day >= 10 then
 	       		day_msb <= (day / 10) mod 10;
