@@ -1,7 +1,3 @@
--- Testbench automatically generated online
--- at https://vhdl.lapinoo.net
--- Generation date : 8.12.2023 13:04:32 UTC
-
 library ieee;
 use ieee.std_logic_1164.all;
 
@@ -14,21 +10,21 @@ architecture tb of tb_AjusteHora is
         port (buttons      : in std_logic_vector (3 downto 0);
               format12_24  : in std_logic;
               clk          : in std_logic;
-              stateActive  : in std_logic_vector (5 downto 0);
+              stateActive  : in std_logic_vector (7 downto 0);
               digits0to3   : out std_logic_vector (15 downto 0);
               digits4to7   : out std_logic_vector (15 downto 0);
               blinkControl : out std_logic_vector (7 downto 0));
     end component;
 
     signal buttons      : std_logic_vector (3 downto 0);
-    signal format12_24  : std_logic := '1';
+    signal format12_24  : std_logic;
     signal clk          : std_logic;
-    signal stateActive  : std_logic_vector (5 downto 0);
+    signal stateActive  : std_logic_vector (7 downto 0);
     signal digits0to3   : std_logic_vector (15 downto 0);
     signal digits4to7   : std_logic_vector (15 downto 0);
     signal blinkControl : std_logic_vector (7 downto 0);
 
-    constant TbPeriod : time := 1000 ns; -- EDIT Put right period here
+    constant TbPeriod : time := 10 ns; -- EDIT Put right period here
     signal TbClock : std_logic := '0';
     signal TbSimEnded : std_logic := '0';
 
@@ -52,18 +48,19 @@ begin
     stimuli : process
     begin
         -- EDIT Adapt initialization as needed
-        stateActive <= ("100000");
+        buttons <= (others => '0');
         format12_24 <= '0';
-        --buttons <= "0100";
-       -- wait for 10 * tbPeriod;
-        buttons <= "0001"; 
-        wait for 10 * tbPeriod;
+        stateActive <= "10000000";
+        buttons <= "0010";
+        buttons <= "0001";
+        wait for 3 * TbPeriod;
+        buttons <= "0100";
+        buttons <="1000";
+        wait for 3*TbPeriod;
+        buttons <= "0100";
+        buttons <= "0001";
 
-        -- EDIT Add stimuli here
-        wait for 100 * TbPeriod;
-
-        -- Stop the clock and hence terminate the simulation
-       
+        
         wait;
     end process;
 
