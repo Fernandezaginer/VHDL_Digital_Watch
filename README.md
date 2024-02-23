@@ -10,13 +10,7 @@ Placa de desarrollo: Nexys 4 DDR Artix-7 <br>
 Pablo Nuñez Hernández (54773) <br>
 Sara de Vargas Muller (53919) <br>
 Andrés Fernández Muñoz (55237) <br>
-
-
-<div align="center">
-<img src="Media/Date.jpg" alt="Date" display="block" margin-left="auto"  margin-right="auto" width="60%">
-<p>Date</p>
-<br>
-</div>
+<br> <br>
 
 
 <div align="center">
@@ -25,3 +19,9 @@ Andrés Fernández Muñoz (55237) <br>
 <br>
 </div>
 
+
+<div align="center">
+<img src="Media/Date.jpg" alt="Date" display="block" margin-left="auto"  margin-right="auto" width="60%">
+<p>Date</p>
+<br>
+</div>
